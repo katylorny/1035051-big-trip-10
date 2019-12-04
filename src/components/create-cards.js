@@ -4,5 +4,5 @@ export const createCardsTemplate = () => { // <ul class="trip-days"> trip-events
   );
 };
 
-import {DESCRIPTION_ARRAY} from "../mocks/event";
-console.log(DESCRIPTION_ARRAY);
+// import {DESCRIPTION_ARRAY} from "../mocks/event";
+
