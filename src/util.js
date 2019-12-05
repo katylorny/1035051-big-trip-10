@@ -45,3 +45,16 @@ export const formatDateTime = (date) => {
   return `${day}/${month}/${year} ${hours}:${minutes}`;
 };
 
+export const makeCheckedArray = (arr) => {
+  let checkedArray = [];
+  let num = getRandomNumber(0, arr.length);
+  arr.forEach((el, number) => {
+    // number === num ? checkedArray.push(true) : checkedArray.push(false);
+    if (number === num) {
+      checkedArray.push(true);
+    } else {
+      checkedArray.push(false);
+    }
+  });
+  return checkedArray;
+};

@@ -7,9 +7,7 @@ import {events} from "../mocks/event";
 
 
 export const createCardTemplate = (cardObject) => {
-// console.log(cardObject);
   const {type, city, price, startTime, endTime} = cardObject;
-  // console.log(type, city, price, startTime, endTime);
   const difference = calculateTimeDifference(startTime, endTime);
   const [days, hours, minutes] = difference;
 
@@ -27,7 +25,7 @@ export const createCardTemplate = (cardObject) => {
                         &mdash;
                         <time class="event__end-time" datetime="${endTime}">${castTimeDateFormat(endTime.getHours())}:${castTimeDateFormat(endTime.getMinutes())}</time>
                       </p>
-                      <p class="event__duration">${castTimeDateFormat(days)}D ${castTimeDateFormat(hours)}H ${castTimeDateFormat(minutes)}M </p> 
+                      <p class="event__duration">${days === 0 ? `` : `${castTimeDateFormat(days)}D`} ${days + hours === 0 ? `` : `${castTimeDateFormat(hours)}H`} ${castTimeDateFormat(minutes)}M </p> 
                     </div>
 
                     <p class="event__price">

@@ -59,7 +59,7 @@ const getRandomDate = () => {
 };
 
 const getRandomNextDate = (date) => {
-  date.setDate(date.getDate() + getRandomNumber(0, 7));
+  date.setDate(date.getDate() + getRandomNumber(0, 2));
   date.setHours(date.getHours() + getRandomNumber(0, 24));
   date.setMinutes(date.getMinutes() + getRandomNumber(0, 60));
   return date;
