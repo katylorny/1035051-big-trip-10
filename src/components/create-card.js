@@ -4,10 +4,23 @@ import {TYPES_STAY} from "../mocks/event";
 import {calculateTimeDifference} from "../util";
 import {castTimeDateFormat} from "../util";
 import {events} from "../mocks/event";
+// import {OFFERS} from "../mocks/event";
+
+const createOffersTemplate = (array) => {
+  return array.map(({name, cost}) => {
+    return (
+      `<li class="event__offer">
+        <span class="event__offer-title">${name}</span>
+        &plus;
+        &euro;&nbsp;<span class="event__offer-price">${cost}</span>
+       </li>`
+    );
+  }).join(`\n`);
+};
 
 
 export const createCardTemplate = (cardObject) => {
-  const {type, city, price, startTime, endTime} = cardObject;
+  const {type, city, price, startTime, endTime, options} = cardObject;
   const difference = calculateTimeDifference(startTime, endTime);
   const [days, hours, minutes] = difference;
 
@@ -31,6 +44,10 @@ export const createCardTemplate = (cardObject) => {
                     <p class="event__price">
                       &euro;&nbsp;<span class="event__price-value">${price}</span>
                     </p>
+                     <h4 class="visually-hidden">Offers:</h4>
+                    <ul class="event__selected-offers">
+                      ${createOffersTemplate(options)}
+                    </ul>
 
                     <button class="event__rollup-btn" type="button">
                       <span class="visually-hidden">Open event</span>
@@ -40,8 +57,6 @@ export const createCardTemplate = (cardObject) => {
   );
 };// trip-events__item
 
-export const eventsMarkup = events.slice(1).map((el) => {
-  return (createCardTemplate(el));
-});
+export const eventsMarkup = events.slice(1).map(createCardTemplate);
 
 

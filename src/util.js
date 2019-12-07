@@ -25,9 +25,11 @@ export const getRandomArrayElement = (arr) => {
 };
 
 export const getRandomArrayElements = (arr, max) => { // тут может выпасть ни одного!
-  return arr
-    .filter(() => Math.random() > 0.5)
-    .slice(0, max);
+  const newArr = arr.filter(() => Math.random() > 0.5).slice(0, max);
+  if (newArr.length === 0) {
+    newArr.push(arr[0]);
+  }
+  return newArr;
 };
 
 export const castTimeDateFormat = (value) => {

@@ -22,9 +22,9 @@ export const generateDescription = () => { // надо шото делать с 
   return getRandomArrayElements(DESCRIPTION_ARRAY, 3);
 };
 
-const generateType = () => {
-  return getRandomArrayElement(TYPES);
-};
+// const generateType = () => {
+//   return getRandomArrayElement(TYPES);
+// };
 
 
 export const generatePhotosArray = () => {
@@ -69,7 +69,8 @@ export const generateEvent = () => {
   const randomDate = getRandomDate();
 
   return {
-    type: generateType(),
+    // type: generateType(),
+    type: getRandomArrayElement(TYPES),
     city: getRandomArrayElement(CITIES),
     photos: generatePhotosArray(),
     description: generateDescription(),
