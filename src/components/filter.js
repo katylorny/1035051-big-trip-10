@@ -1,4 +1,5 @@
 import {generateFilters} from "../mocks/filter";
+import {createElement} from "../util";
 
 // const generateFilterMarkup = () => {
 //
@@ -14,7 +15,7 @@ const generateFilterMarkup = generateFilters().map((el) => {
   );
 }).join(`\n`);
 
-export const createFilterTemplate = () => { // Фильтры
+const createFilterTemplate = () => { // Фильтры
   return (
     `<form class="trip-filters" action="#" method="get">
               ${generateFilterMarkup}
@@ -22,3 +23,25 @@ export const createFilterTemplate = () => { // Фильтры
             </form>`
   );
 };
+
+export default class Filter {
+  constructor() {
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createFilterTemplate();
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

@@ -1,7 +1,7 @@
 import {events} from "../mocks/event";
-import {MONTHS} from "../util";
+import {createElement, MONTHS} from "../util";
 
-export const createTripTemplate = () => {
+const createTripTemplate = () => {
   const {city: cityStart, startTime: startTime} = events[0];
   const {city: cityEnd, endTime: endTime} = events[events.length - 1];
   let cityMid;
@@ -17,3 +17,25 @@ export const createTripTemplate = () => {
             </div>`
   );
 };
+
+export default class Trip {
+  constructor() {
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTripTemplate();
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

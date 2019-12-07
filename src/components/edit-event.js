@@ -1,17 +1,7 @@
-
-// import {generateEvent} from "../mocks/event";
-// import {generateEvents} from "../mocks/event";
-import {events} from "../mocks/event";
-
-
-const {type, city, price, startTime, endTime} = events[0];
 import {CITIES} from "../mocks/event";
 import {TYPES_MOVE} from "../mocks/event";
 import {TYPES_STAY} from "../mocks/event";
-import {formatDateTime} from "../util";
-// import {OFFERS} from "../mocks/event";
-import {generateDescription} from "../mocks/event";
-import {generatePhotosArray} from "../mocks/event";
+import {createElement, formatDateTime} from "../util";
 
 const createTypesTemplate = (arr) => {
   return (
@@ -26,10 +16,11 @@ const createTypesTemplate = (arr) => {
   );
 };
 
-const createOfferTemplate = events[0].options.map((offer) => {
-  const {name: offerName, type: offerType, cost: offerPrice} = offer;
-  return (
-    `<div class="event__offer-selector">
+const createOfferTemplate = (arr) => {
+  return arr.map((offer) => {
+    const {name: offerName, type: offerType, cost: offerPrice} = offer;
+    return (
+      `<div class="event__offer-selector">
        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offerType}-1" type="checkbox" name="event-offer-${offerType}" checked>
        <label class="event__offer-label" for="event-offer-${offerType}-1">
          <span class="event__offer-title">${offerName}</span>
@@ -37,20 +28,26 @@ const createOfferTemplate = events[0].options.map((offer) => {
          &euro;&nbsp;<span class="event__offer-price">${offerPrice}</span>
        </label>
      </div>`
-  );
-}).join(`\n`);
+    );
+  }).join(`\n`);
+};
 
 const createCitiesListTemplate = CITIES.map((el) => {
   return `<option value="${el}"></option>`;
 }).join(`\n`);
 
-const createPhotosTemplate = generatePhotosArray().map((photo) => {
-  return (
-    `<img class="event__photo" src="${photo}" alt="Event photo">`
-  );
-}).join(`\n`);
+const createPhotosTemplate = (array) => {
+  return array.map((photo) => {
+    return (
+      `<img class="event__photo" src="${photo}" alt="Event photo">`
+    );
+  }).join(`\n`);
+};
 
-export const createEditEventTemplate = () => {
+const createEditEventTemplate = (event) => {
+
+  const {type, city, photos, description, price, startTime, endTime, options} = event;
+  // console.log(event)
   return (
     `<form class="event  event--edit" action="#" method="post">
                     <header class="event__header">
@@ -131,7 +128,7 @@ export const createEditEventTemplate = () => {
                         <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
                         <div class="event__available-offers">
-                          ${createOfferTemplate}
+                          ${createOfferTemplate(options)}
                         </div>
                       </section>
 
@@ -139,13 +136,13 @@ export const createEditEventTemplate = () => {
                         <h3 class="event__section-title  event__section-title--destination">Destination</h3>
                         <p class="event__destination-description">
                         
-                        ${generateDescription()}
+                        ${description}
                         
                         </p>
 
                         <div class="event__photos-container">
                           <div class="event__photos-tape">
-                            ${createPhotosTemplate}
+                            ${createPhotosTemplate(photos)}
                           </div>
                         </div>
                       </section>
@@ -153,3 +150,26 @@ export const createEditEventTemplate = () => {
                   </form>`
   );
 };// взяла edit-event
+
+export default class EditEvent {
+  constructor(event) {
+    this._element = null;
+    this._event = event;
+  }
+
+  getTemplate() {
+    return createEditEventTemplate(this._event);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
