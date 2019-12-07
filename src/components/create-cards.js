@@ -3,3 +3,6 @@ export const createCardsTemplate = () => { // <ul class="trip-days"> trip-events
     `<ul class="trip-events__list"></ul>`
   );
 };
+
+// import {DESCRIPTION_ARRAY} from "../mocks/event";
+
