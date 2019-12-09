@@ -1,9 +1,9 @@
 // import {generatedEvents} from "../mocks/event";
 import {TYPES_STAY} from "../mocks/event";
 // import {TYPES_MOVE} from "../mocks/event";
-import {calculateTimeDifference} from "../util";
+import {calculateTimeDifference, createElement} from "../util";
 import {castTimeDateFormat} from "../util";
-import {events} from "../mocks/event";
+// import {events} from "../mocks/event";
 // import {OFFERS} from "../mocks/event";
 
 const createOffersTemplate = (array) => {
@@ -46,7 +46,7 @@ export const createCardTemplate = (cardObject) => {
                     </p>
                      <h4 class="visually-hidden">Offers:</h4>
                     <ul class="event__selected-offers">
-                      ${createOffersTemplate(options)}
+                      ${createOffersTemplate(options.slice(0, 3))}
                     </ul>
 
                     <button class="event__rollup-btn" type="button">
@@ -57,6 +57,29 @@ export const createCardTemplate = (cardObject) => {
   );
 };// trip-events__item
 
-export const eventsMarkup = events.slice(1).map(createCardTemplate);
+// export const eventsMarkup = events.slice(1).map(createCardTemplate);
 
 
+export default class Card {
+  constructor(event) {
+    this._element = null;
+    this._event = event;
+  }
+
+  getTemplate() {
+    return createCardTemplate(this._event);
+
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

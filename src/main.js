@@ -1,39 +1,59 @@
-import {createCardsTemplate} from './components/create-cards.js';
-import {createTripTemplate} from './components/create-trip.js';
-import {createEditEventTemplate} from './components/edit-event.js';
-// import {createCardTemplate} from './components/create-card.js';
-import {createFilterTemplate} from './components/filter.js';
-import {createMenuTemplate} from './components/menu.js';
-// import {generateEvent} from "./mocks/event";
-// import {events} from "./mocks/event";
-import {eventsMarkup} from "./components/create-card";
 import {events} from "./mocks/event";
+import {render, RENDER_POSITION} from "./util";
 
-// const CARDS_COUNT = 3;
 
-const render = (container, template, place = `beforeend`) => {
-  container.insertAdjacentHTML(place, template);
-};
+import FilterComponent from "./components/filter";
+import MenuComponent from './components/menu.js';
+import EditEventComponent from './components/edit-event.js';
+import TripComponent from './components/create-trip.js';
+import CardsComponent from './components/create-cards.js';
+import CardComponent from './components/create-card.js';
+
 
 const tripInfoElement = document.querySelector(`.trip-main__trip-info`);
 
-render(tripInfoElement, createTripTemplate(), `afterbegin`);
+render(tripInfoElement, new TripComponent().getElement(), RENDER_POSITION.AFTERBEGIN);
 
 const tripControlsElement = document.querySelector(`.trip-main__trip-controls`);
 const tripControlsMenuElement = tripControlsElement.querySelector(`h2`);
 
-render(tripControlsMenuElement, createMenuTemplate(), `afterend`);
-render(tripControlsElement, createFilterTemplate());
+render(tripControlsMenuElement, new MenuComponent().getElement(), RENDER_POSITION.AFTEREND);
+render(tripControlsElement, new FilterComponent().getElement(), RENDER_POSITION.BEFOREEND);
 
 const tripEventsElement = document.querySelector(`.trip-events`);
+// render(tripEventsElement, new EditEventComponent().getElement(), RENDER_POSITION.BEFOREEND);
+
+const cardsList = new CardsComponent().getElement();
+
+render(tripEventsElement, cardsList, RENDER_POSITION.BEFOREEND);
 
 
-render(tripEventsElement, createEditEventTemplate());
-render(tripEventsElement, createCardsTemplate());
+const renderCard = (event) => {
+  const card = new CardComponent(event).getElement();
+  const editCard = new EditEventComponent(event).getElement();
 
-const tripCardsElement = document.querySelector(`.trip-events__list`);
+  const rollUpButton = card.querySelector(`.event__rollup-btn`);
+  rollUpButton.addEventListener(`click`, () => {
+    cardsList.replaceChild(editCard, card);
+  });
 
-render(tripCardsElement, eventsMarkup);
+  const rollDownButton = editCard.querySelector(`.event__rollup-btn`);
+  rollDownButton.addEventListener(`click`, () => {
+    cardsList.replaceChild(card, editCard);
+  });
+
+  editCard.addEventListener(`submit`, () => {
+    cardsList.replaceChild(card, editCard);
+  });
+
+  render(cardsList, card, RENDER_POSITION.BEFOREEND);
+};
+
+
+events.slice().map((event) => {
+  renderCard(event);
+});
+
 
 const calculatePrice = () => {
   let price = 0;
