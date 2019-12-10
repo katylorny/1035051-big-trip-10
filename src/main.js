@@ -29,24 +29,39 @@ render(tripEventsElement, cardsList, RENDER_POSITION.BEFOREEND);
 
 
 const renderCard = (event) => {
-  const card = new CardComponent(event).getElement();
-  const editCard = new EditEventComponent(event).getElement();
+  const card = new CardComponent(event);
+  const editCard = new EditEventComponent(event);
 
-  const rollUpButton = card.querySelector(`.event__rollup-btn`);
-  rollUpButton.addEventListener(`click`, () => {
-    cardsList.replaceChild(editCard, card);
-  });
 
-  const rollDownButton = editCard.querySelector(`.event__rollup-btn`);
-  rollDownButton.addEventListener(`click`, () => {
-    cardsList.replaceChild(card, editCard);
-  });
 
-  editCard.addEventListener(`submit`, () => {
-    cardsList.replaceChild(card, editCard);
-  });
+  const onEscKeyDown = (evt) => {
+    const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
 
-  render(cardsList, card, RENDER_POSITION.BEFOREEND);
+    if (isEscKey) {
+      replaceEditToCard();
+    }
+  };
+
+  const replaceEditToCard = () => {
+    cardsList.replaceChild(card.getElement(), editCard.getElement());
+    document.addEventListener(`keydown`, onEscKeyDown);
+  };
+
+  const replaceCardToEdit = () => {
+    cardsList.replaceChild(editCard.getElement(), card.getElement());
+
+  };
+
+  const rollUpButton = card.getElement().querySelector(`.event__rollup-btn`);
+  rollUpButton.addEventListener(`click`, replaceCardToEdit);
+
+  const rollDownButton = editCard.getElement().querySelector(`.event__rollup-btn`);
+
+  rollDownButton.addEventListener(`click`, replaceEditToCard);
+
+  editCard.getElement().addEventListener(`submit`, replaceEditToCard);
+
+  render(cardsList, card.getElement(), RENDER_POSITION.BEFOREEND);
 };
 
 
