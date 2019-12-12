@@ -8,6 +8,7 @@ import EditEventComponent from './components/edit-event.js';
 import TripComponent from './components/create-trip.js';
 import CardsComponent from './components/create-cards.js';
 import CardComponent from './components/create-card.js';
+// import NoPointsComponent from './components/no-points.js';
 
 
 const tripInfoElement = document.querySelector(`.trip-main__trip-info`);
@@ -24,6 +25,7 @@ const tripEventsElement = document.querySelector(`.trip-events`);
 // render(tripEventsElement, new EditEventComponent().getElement(), RENDER_POSITION.BEFOREEND);
 
 const cardsList = new CardsComponent().getElement();
+console.log(cardsList);
 
 render(tripEventsElement, cardsList, RENDER_POSITION.BEFOREEND);
 
@@ -44,12 +46,11 @@ const renderCard = (event) => {
 
   const replaceEditToCard = () => {
     cardsList.replaceChild(card.getElement(), editCard.getElement());
-    document.addEventListener(`keydown`, onEscKeyDown);
   };
 
   const replaceCardToEdit = () => {
     cardsList.replaceChild(editCard.getElement(), card.getElement());
-
+    document.addEventListener(`keydown`, onEscKeyDown, {once:true});
   };
 
   const rollUpButton = card.getElement().querySelector(`.event__rollup-btn`);
@@ -68,6 +69,18 @@ const renderCard = (event) => {
 events.slice().map((event) => {
   renderCard(event);
 });
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 const calculatePrice = () => {
