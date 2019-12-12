@@ -8,13 +8,10 @@ import EditEventComponent from './components/edit-event.js';
 import TripComponent from './components/create-trip.js';
 import CardsComponent from './components/create-cards.js';
 import CardComponent from './components/create-card.js';
-// import NoPointsComponent from './components/no-points.js';
+import NoPointsComponent from './components/no-points.js';
 
 
 const tripInfoElement = document.querySelector(`.trip-main__trip-info`);
-
-render(tripInfoElement, new TripComponent().getElement(), RENDER_POSITION.AFTERBEGIN);
-
 const tripControlsElement = document.querySelector(`.trip-main__trip-controls`);
 const tripControlsMenuElement = tripControlsElement.querySelector(`h2`);
 
@@ -22,19 +19,13 @@ render(tripControlsMenuElement, new MenuComponent().getElement(), RENDER_POSITIO
 render(tripControlsElement, new FilterComponent().getElement(), RENDER_POSITION.BEFOREEND);
 
 const tripEventsElement = document.querySelector(`.trip-events`);
-// render(tripEventsElement, new EditEventComponent().getElement(), RENDER_POSITION.BEFOREEND);
 
 const cardsList = new CardsComponent().getElement();
-console.log(cardsList);
-
-render(tripEventsElement, cardsList, RENDER_POSITION.BEFOREEND);
 
 
 const renderCard = (event) => {
   const card = new CardComponent(event);
   const editCard = new EditEventComponent(event);
-
-
 
   const onEscKeyDown = (evt) => {
     const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
@@ -47,10 +38,9 @@ const renderCard = (event) => {
   const replaceEditToCard = () => {
     cardsList.replaceChild(card.getElement(), editCard.getElement());
   };
-
   const replaceCardToEdit = () => {
     cardsList.replaceChild(editCard.getElement(), card.getElement());
-    document.addEventListener(`keydown`, onEscKeyDown, {once:true});
+    document.addEventListener(`keydown`, onEscKeyDown, {once: true});
   };
 
   const rollUpButton = card.getElement().querySelector(`.event__rollup-btn`);
@@ -66,31 +56,29 @@ const renderCard = (event) => {
 };
 
 
-events.slice().map((event) => {
-  renderCard(event);
-});
+const noPoints = new NoPointsComponent();
 
+if (events.length === 0) {
+  render(tripEventsElement, noPoints.getElement(), RENDER_POSITION.BEFOREEND);
+} else {
+  render(tripInfoElement, new TripComponent().getElement(), RENDER_POSITION.AFTERBEGIN);
+  render(tripEventsElement, cardsList, RENDER_POSITION.BEFOREEND);
 
-
-
-
-
-
-
-
-
-
-
-
-
-const calculatePrice = () => {
-  let price = 0;
-  events.forEach((el) => {
-    price += el.price;
+  events.slice().map((event) => {
+    renderCard(event);
   });
-  return price;
-};
+
+  const calculatePrice = () => {
+    let price = 0;
+    events.forEach((el) => {
+      price += el.price;
+    });
+    return price;
+  };
 
 
-const tripCost = document.querySelector(`.trip-info__cost-value`);
-tripCost.textContent = calculatePrice();
+  const tripCost = document.querySelector(`.trip-info__cost-value`);
+  tripCost.textContent = calculatePrice();
+}
+
+
