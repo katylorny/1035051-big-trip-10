@@ -10,7 +10,7 @@ const tripControlsMenuElement = tripControlsElement.querySelector(`h2`);
 
 
 render(tripControlsMenuElement, new MenuComponent().getElement(), RENDER_POSITION.AFTEREND);
-render(tripControlsElement, new FilterComponent().getElement(), RENDER_POSITION.BEFOREEND);
+render(tripControlsElement, new FilterComponent().getElement());
 
 const tripEvents = document.querySelector(`.trip-events`);
 
