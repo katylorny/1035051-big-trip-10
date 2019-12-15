@@ -60,28 +60,3 @@ export const makeCheckedArray = (arr) => {
   });
   return checkedArray;
 };
-
-export const createElement = (template) => {
-  const newElement = document.createElement(`div`);
-  newElement.innerHTML = template;
-  return newElement.firstChild;
-};
-
-export const RENDER_POSITION = {
-  BEFOREEND: `beforeend`,
-  AFTERBEGIN: `afterbegin`,
-  AFTEREND: `afterend`
-};
-
-export const render = (container, template, place) => {
-  switch (place) {
-    case RENDER_POSITION.AFTERBEGIN:
-      container.prepend(template);
-      break;
-    case RENDER_POSITION.BEFOREEND:
-      container.append(template);
-      break;
-    case RENDER_POSITION.AFTEREND:
-      container.after(template);
-  }
-};

@@ -1,6 +1,4 @@
-// import {getRandomNumber} from "../util";
-import {makeCheckedArray} from "../util";
-
+import {makeCheckedArray} from "../utils/common";
 
 const FILTERS = [
   `Everything`,
