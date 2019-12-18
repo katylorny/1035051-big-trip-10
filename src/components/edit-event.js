@@ -1,7 +1,8 @@
 import {CITIES} from "../mocks/event";
 import {TYPES_MOVE} from "../mocks/event";
 import {TYPES_STAY} from "../mocks/event";
-import {createElement, formatDateTime} from "../util";
+import {formatDateTime} from "../utils/common";
+import AbstractComponent from "./abstract-component";
 
 const createTypesTemplate = (arr) => {
   return (
@@ -151,9 +152,9 @@ const createEditEventTemplate = (event) => {
   );
 };// взяла edit-event
 
-export default class EditEvent {
+export default class EditEvent extends AbstractComponent {
   constructor(event) {
-    this._element = null;
+    super();
     this._event = event;
   }
 
@@ -161,15 +162,11 @@ export default class EditEvent {
     return createEditEventTemplate(this._event);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  setRollupButtonClickHandler(handler) {
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, handler);
   }
 
-  removeElement() {
-    this._element = null;
+  setSubmitFormHandler(handler) {
+    this.getElement().addEventListener(`submit`, handler);
   }
 }

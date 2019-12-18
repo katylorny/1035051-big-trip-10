@@ -1,8 +1,8 @@
 // import {generatedEvents} from "../mocks/event";
 import {TYPES_STAY} from "../mocks/event";
 // import {TYPES_MOVE} from "../mocks/event";
-import {calculateTimeDifference, createElement} from "../util";
-import {castTimeDateFormat} from "../util";
+import {calculateTimeDifference, castTimeDateFormat} from "../utils/common";
+import AbstractComponent from "./abstract-component";
 // import {events} from "../mocks/event";
 // import {OFFERS} from "../mocks/event";
 
@@ -60,26 +60,17 @@ export const createCardTemplate = (cardObject) => {
 // export const eventsMarkup = events.slice(1).map(createCardTemplate);
 
 
-export default class Card {
+export default class Card extends AbstractComponent {
   constructor(event) {
-    this._element = null;
+    super();
     this._event = event;
   }
 
   getTemplate() {
     return createCardTemplate(this._event);
-
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
+  setRollupButtonClickHandler(handler) {
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, handler);
   }
 }

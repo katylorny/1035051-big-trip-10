@@ -1,4 +1,5 @@
-import {createElement} from "../util";
+
+import AbstractComponent from "./abstract-component";
 
 export const createCardsTemplate = () => { // <ul class="trip-days"> trip-events__list
   return (
@@ -8,24 +9,9 @@ export const createCardsTemplate = () => { // <ul class="trip-days"> trip-events
 
 // import {DESCRIPTION_ARRAY} from "../mocks/event";
 
-export default class Cards {
-  constructor() {
-    this._element = null;
-  }
+export default class Cards extends AbstractComponent {
 
   getTemplate() {
     return createCardsTemplate();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

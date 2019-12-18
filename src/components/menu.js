@@ -1,5 +1,6 @@
 import {generateMenuItems} from "../mocks/menu";
-import {createElement} from "../util";
+
+import AbstractComponent from "./abstract-component";
 // import {createFilterTemplate} from "./filter";
 // import {generateFilters} from "../mocks/filter";
 
@@ -18,24 +19,9 @@ const createMenuTemplate = () => { // Меню
   );
 };
 
-export default class Menu {
-  constructor() {
-    this._element = null;
-  }
+export default class Menu extends AbstractComponent {
 
   getTemplate() {
     return createMenuTemplate();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

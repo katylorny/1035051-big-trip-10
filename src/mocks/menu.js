@@ -1,4 +1,4 @@
-import {makeCheckedArray} from "../util";
+import {makeCheckedArray} from "../utils/common";
 
 const MENU_ITEMS = [
   `Table`,
