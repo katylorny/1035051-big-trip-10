@@ -65,7 +65,6 @@ export const generateEvent = () => {
   const randomDate = getRandomDate();
 
   return {
-    // type: generateType(),
     type: getRandomArrayElement(TYPES),
     city: getRandomArrayElement(CITIES),
     photos: generatePhotosArray(),
@@ -73,7 +72,8 @@ export const generateEvent = () => {
     price: getRandomNumber(PRICE_MIN, PRICE_MAX),
     startTime: new Date(randomDate),
     endTime: new Date(getRandomNextDate(randomDate)),
-    options: generateAddOptions()
+    options: generateAddOptions(),
+    isFavorite: false,
   };
 };
 

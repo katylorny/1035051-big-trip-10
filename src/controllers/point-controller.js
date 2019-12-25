@@ -2,10 +2,12 @@ import CardComponent from "../components/create-card";
 import {render, RENDER_POSITION} from "../utils/render";
 import EditEventComponent from "../components/edit-event";
 import {replace} from "../utils/render";
+import {events} from "../mocks/event";
 
 export default class PointController {
-  constructor(container) {
+  constructor(container, onDataChange) {
     this._container = container;
+    this._onDataChange = onDataChange;
   }
 
   render(event) {
@@ -31,6 +33,12 @@ export default class PointController {
     editCard.setRollupButtonClickHandler(replaceEditToCard);
     editCard.setSubmitFormHandler(replaceEditToCard);
 
+    editCard.setFavoriteButtonClickHandler(() => {
+      this._onDataChange(this, event, Object.assign({}, event, {
+        isFavorite: !event.isFavorite
+      }))
+      // console.log(events[0])
+    });
     render(this._container, card.getElement(), RENDER_POSITION.BEFOREEND);
   };
 

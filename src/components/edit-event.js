@@ -47,7 +47,7 @@ const createPhotosTemplate = (array) => {
 
 const createEditEventTemplate = (event) => {
 
-  const {type, city, photos, description, price, startTime, endTime, options} = event;
+  const {type, city, photos, description, price, startTime, endTime, options, isFavorite} = event;
   // console.log(event)
   return (
     `<form class="event  event--edit" action="#" method="post">
@@ -110,7 +110,7 @@ const createEditEventTemplate = (event) => {
                       <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
                       <button class="event__reset-btn" type="reset">Delete</button>
 
-                      <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" checked>
+                      <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${isFavorite ? `checked` : ``}>
                       <label class="event__favorite-btn" for="event-favorite-1">
                         <span class="visually-hidden">Add to favorite</span>
                         <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
@@ -168,5 +168,9 @@ export default class EditEvent extends AbstractComponent {
 
   setSubmitFormHandler(handler) {
     this.getElement().addEventListener(`submit`, handler);
+  }
+
+  setFavoriteButtonClickHandler(handler) {
+    this.getElement().querySelector(`.event__favorite-icon`).addEventListener(`click`, handler);
   }
 }
