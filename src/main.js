@@ -14,5 +14,6 @@ render(tripControlsElement, new FilterComponent().getElement());
 
 const tripEvents = document.querySelector(`.trip-events`);
 
+
 const tripController = new TripController(tripEvents);
 tripController.render(events);
