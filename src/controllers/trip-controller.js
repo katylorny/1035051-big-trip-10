@@ -1,39 +1,9 @@
-// import {events} from "../mocks/event";
 import TripComponent from "../components/create-trip";
 import {render, RENDER_POSITION, replace} from "../utils/render";
 import NoPointsComponent from "../components/no-points";
 import CardsComponent from "../components/create-cards";
-import CardComponent from '../components/create-card.js';
-import EditEventComponent from '../components/edit-event.js';
 import SortComponent, {SORT_TYPES} from "../components/sort";
-
-
-const renderCard = (event, eventsList) => {
-  const card = new CardComponent(event);
-  const editCard = new EditEventComponent(event);
-
-  const onEscKeyDown = (evt) => {
-    const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
-
-    if (isEscKey) {
-      replaceEditToCard();
-    }
-  };
-
-  const replaceEditToCard = () => {
-    replace(card, editCard);
-  };
-  const replaceCardToEdit = () => {
-    replace(editCard, card);
-    document.addEventListener(`keydown`, onEscKeyDown, {once: true});
-  };
-
-  card.setRollupButtonClickHandler(replaceCardToEdit);
-  editCard.setRollupButtonClickHandler(replaceEditToCard);
-  editCard.setSubmitFormHandler(replaceEditToCard);
-
-  render(eventsList, card.getElement(), RENDER_POSITION.BEFOREEND);
-};
+import PointController from "./point-controller";
 
 export default class TripController {
   constructor(container) {
@@ -46,6 +16,7 @@ export default class TripController {
     this._sortComponent = new SortComponent();
     this._events = [];
     this._onSortTypeChange = this._onSortTypeChange.bind(this);
+    this._pointController = new PointController(this._cardsList);
   }
 
   render(events) {
@@ -60,7 +31,7 @@ export default class TripController {
       this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
 
       this._events.slice().map((event) => {
-        renderCard(event, this._cardsList);
+        this._pointController.render(event);
       });
 
       const calculatePrice = () => {
@@ -94,7 +65,7 @@ export default class TripController {
 
     this._cardsList.innerHTML = ``;
     sortedEvents.map((it) => {
-      renderCard(it, this._cardsList);
+      this._pointController.render(it);
     });
   }
 }
