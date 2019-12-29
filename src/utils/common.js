@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 export const MS_MIN = 60000;
 export const MS_HOUR = 3600000;
 export const MS_DAY = 86400000;
@@ -34,6 +36,24 @@ export const getRandomArrayElements = (arr, max) => { // тут может вы�
 
 export const castTimeDateFormat = (value) => {
   return value < 10 ? `0${value}` : String(value);
+};
+
+export const timeFormat = (date) => {
+  return moment(date).format(`hh:mm`);
+};
+
+export const timeDuration = (startTime, endTime) => {
+  const a = moment(startTime);
+  const b = moment(endTime);
+  // return moment.utc(moment.duration(endTime) - moment.duration(startTime)).format('HH:mm')
+  // return moment.duration(b.diff(a));
+  const m = moment.duration(b - a);
+
+  return m;
+  // console.log(11, m)
+  //  console.log(22, m.days())
+  //  console.log(22, m.hours())
+  // console.log(33, m.minutes())
 };
 
 export const formatDateTime = (date) => {

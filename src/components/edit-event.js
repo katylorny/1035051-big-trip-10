@@ -4,6 +4,7 @@ import {TYPES_STAY} from "../mocks/event";
 import {formatDateTime} from "../utils/common";
 // import AbstractComponent from "./abstract-component";
 import AbstractSmartComponent from "./abstract-smart-component";
+import flatpickr from 'flatpickr';
 
 const createTypesTemplate = (arr) => {
   return (
@@ -158,6 +159,8 @@ export default class EditEvent extends AbstractSmartComponent {
   constructor(event) {
     super();
     this._event = event;
+    this._flatpickr = null;
+    this._applyFlatpickr();
   }
 
   getTemplate() {
@@ -190,6 +193,27 @@ export default class EditEvent extends AbstractSmartComponent {
         });
         this.rerender();
       }
+    });
+  }
+
+  _applyFlatpickr() {
+    if (this._flatpickr) {
+      this._flatpickr.destroy();
+      this._flatpickr = null;
+    }
+
+    const startDate = this.getElement().querySelector(`#event-start-time-1`);
+    flatpickr(startDate, {
+      // altInput: true,
+      // allowInput: true,
+      enableTime: true,
+      dateFormat: `d/m/Y H:i`,
+    });
+
+    const endDate = this.getElement().querySelector(`#event-end-time-1`);
+    flatpickr(endDate, {
+      enableTime: true,
+      dateFormat: `d/m/Y H:i`,
     });
   }
 }
