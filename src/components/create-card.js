@@ -1,7 +1,7 @@
 // import {generatedEvents} from "../mocks/event";
 import {TYPES_STAY} from "../mocks/event";
 // import {TYPES_MOVE} from "../mocks/event";
-import {calculateTimeDifference, castTimeDateFormat} from "../utils/common";
+import {castTimeDateFormat, timeDuration, timeFormat} from "../utils/common";
 import AbstractComponent from "./abstract-component";
 // import {events} from "../mocks/event";
 // import {OFFERS} from "../mocks/event";
@@ -21,8 +21,12 @@ const createOffersTemplate = (array) => {
 
 export const createCardTemplate = (cardObject) => {
   const {type, city, price, startTime, endTime, options} = cardObject;
-  const difference = calculateTimeDifference(startTime, endTime);
-  const [days, hours, minutes] = difference;
+  // const difference = calculateTimeDifference(startTime, endTime);
+  // const [days, hours, minutes] = difference;
+  const duration = timeDuration(startTime, endTime);
+  const days = duration.days();
+  const hours = duration.hours();
+  const minutes = duration.minutes();
 
   return (
     `<li class="trip-events__item">
@@ -34,9 +38,9 @@ export const createCardTemplate = (cardObject) => {
 
                     <div class="event__schedule">
                       <p class="event__time">
-                        <time class="event__start-time" datetime="${startTime}">${castTimeDateFormat(startTime.getHours())}:${castTimeDateFormat(startTime.getMinutes())}</time> 
+                        <time class="event__start-time" datetime="${startTime}">${timeFormat(startTime)}</time> 
                         &mdash;
-                        <time class="event__end-time" datetime="${endTime}">${castTimeDateFormat(endTime.getHours())}:${castTimeDateFormat(endTime.getMinutes())}</time>
+                        <time class="event__end-time" datetime="${endTime}">${timeFormat(endTime)}</time>
                       </p>
                       <p class="event__duration">${days === 0 ? `` : `${castTimeDateFormat(days)}D`} ${days + hours === 0 ? `` : `${castTimeDateFormat(hours)}H`} ${castTimeDateFormat(minutes)}M </p> 
                     </div>
