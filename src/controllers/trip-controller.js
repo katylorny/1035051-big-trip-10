@@ -1,18 +1,18 @@
 import TripComponent from "../components/create-trip";
-import {render, RENDER_POSITION, replace} from "../utils/render";
+import {render, RENDER_POSITION} from "../utils/render";
 import NoPointsComponent from "../components/no-points";
 import CardsComponent from "../components/create-cards";
 import SortComponent, {SORT_TYPES} from "../components/sort";
 import PointController from "./point-controller";
-import {events} from "../mocks/event";
+// import {events} from "../mocks/event";
 
-const renderEvents = (events, cardsList, onDataChange) => {
-  events.slice().map((event) => {
-    const pointController = new PointController(cardsList, onDataChange);
+const renderEvents = (events, cardsList, onDataChange, onViewChange) => {
+  return (events.slice().map((event) => {
+    const pointController = new PointController(cardsList, onDataChange, onViewChange);
     // console.log(pointController);
     pointController.render(event, onDataChange);
     return pointController;
-  });
+  }));
 };
 
 export default class TripController {
@@ -27,6 +27,8 @@ export default class TripController {
     this._events = [];
     this._onSortTypeChange = this._onSortTypeChange.bind(this);
     this._onDataChange = this._onDataChange.bind(this);
+    this._onViewChange = this._onViewChange.bind(this);
+    this._controllers = [];
   }
 
   render(events) {
@@ -40,11 +42,7 @@ export default class TripController {
 
       this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
 
-      // this._events.slice().map((event) => {
-      //   const pointController = new PointController(this._cardsList, this._onDataChange);
-      //   pointController.render(event, this._onDataChange);
-      // });
-      renderEvents(this._events, this._cardsList, this._onDataChange);
+      this._controllers = renderEvents(this._events, this._cardsList, this._onDataChange, this._onViewChange);
 
       const calculatePrice = () => {
         let price = 0;
@@ -76,18 +74,21 @@ export default class TripController {
     }
 
     this._cardsList.innerHTML = ``;
-    renderEvents(sortedEvents, this._cardsList, this._onDataChange);
+    renderEvents(sortedEvents, this._cardsList, this._onDataChange, this._onViewChange);
   }
 
   _onDataChange(pointController, oldData, newData) {
-
     const index = this._events.findIndex((it) => it === oldData);
-
     if (index === -1) {
       return;
     }
 
     this._events = [].concat(this._events.slice(0, index), newData, this._events.slice(index + 1));
     pointController.render(this._events[index]);
+
+  }
+
+  _onViewChange() {
+    this._controllers.forEach((it) => it.setDefaultView());
   }
 }

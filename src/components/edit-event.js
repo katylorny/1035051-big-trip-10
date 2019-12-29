@@ -2,7 +2,8 @@ import {CITIES} from "../mocks/event";
 import {TYPES_MOVE} from "../mocks/event";
 import {TYPES_STAY} from "../mocks/event";
 import {formatDateTime} from "../utils/common";
-import AbstractComponent from "./abstract-component";
+// import AbstractComponent from "./abstract-component";
+import AbstractSmartComponent from "./abstract-smart-component";
 
 const createTypesTemplate = (arr) => {
   return (
@@ -48,6 +49,7 @@ const createPhotosTemplate = (array) => {
 const createEditEventTemplate = (event) => {
 
   const {type, city, photos, description, price, startTime, endTime, options, isFavorite} = event;
+
   // console.log(event)
   return (
     `<form class="event  event--edit" action="#" method="post">
@@ -55,7 +57,7 @@ const createEditEventTemplate = (event) => {
                       <div class="event__type-wrapper">
                         <label class="event__type  event__type-btn" for="event-type-toggle-1">
                           <span class="visually-hidden">Choose event type</span>
-                          <img class="event__type-icon" width="17" height="17" src="img/icons/flight.png" alt="Event type icon">
+                          <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
                         </label>
                         <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -150,9 +152,9 @@ const createEditEventTemplate = (event) => {
                     </section>
                   </form>`
   );
-};// взяла edit-event
+};
 
-export default class EditEvent extends AbstractComponent {
+export default class EditEvent extends AbstractSmartComponent {
   constructor(event) {
     super();
     this._event = event;
@@ -172,5 +174,22 @@ export default class EditEvent extends AbstractComponent {
 
   setFavoriteButtonClickHandler(handler) {
     this.getElement().querySelector(`.event__favorite-icon`).addEventListener(`click`, handler);
+  }
+
+  recoveryListeners() {
+    this._subscribeOnEvents();
+  }
+
+  _subscribeOnEvents() {
+    const element = this.getElement();
+
+    element.querySelector(`.event__type-list`).addEventListener(`click`, (evt) => {
+      if (evt.target.tagName === `LABEL`) {
+        this._event = Object.assign({}, this._event, {
+          type: evt.target.textContent,
+        });
+        this.rerender();
+      }
+    });
   }
 }
