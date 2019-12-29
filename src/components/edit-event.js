@@ -2,7 +2,8 @@ import {CITIES} from "../mocks/event";
 import {TYPES_MOVE} from "../mocks/event";
 import {TYPES_STAY} from "../mocks/event";
 import {formatDateTime} from "../utils/common";
-import AbstractComponent from "./abstract-component";
+// import AbstractComponent from "./abstract-component";
+import AbstractSmartComponent from "./abstract-smart-component";
 
 const createTypesTemplate = (arr) => {
   return (
@@ -47,7 +48,8 @@ const createPhotosTemplate = (array) => {
 
 const createEditEventTemplate = (event) => {
 
-  const {type, city, photos, description, price, startTime, endTime, options} = event;
+  const {type, city, photos, description, price, startTime, endTime, options, isFavorite} = event;
+
   // console.log(event)
   return (
     `<form class="event  event--edit" action="#" method="post">
@@ -55,7 +57,7 @@ const createEditEventTemplate = (event) => {
                       <div class="event__type-wrapper">
                         <label class="event__type  event__type-btn" for="event-type-toggle-1">
                           <span class="visually-hidden">Choose event type</span>
-                          <img class="event__type-icon" width="17" height="17" src="img/icons/flight.png" alt="Event type icon">
+                          <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
                         </label>
                         <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -110,7 +112,7 @@ const createEditEventTemplate = (event) => {
                       <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
                       <button class="event__reset-btn" type="reset">Delete</button>
 
-                      <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" checked>
+                      <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${isFavorite ? `checked` : ``}>
                       <label class="event__favorite-btn" for="event-favorite-1">
                         <span class="visually-hidden">Add to favorite</span>
                         <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
@@ -150,9 +152,9 @@ const createEditEventTemplate = (event) => {
                     </section>
                   </form>`
   );
-};// взяла edit-event
+};
 
-export default class EditEvent extends AbstractComponent {
+export default class EditEvent extends AbstractSmartComponent {
   constructor(event) {
     super();
     this._event = event;
@@ -168,5 +170,26 @@ export default class EditEvent extends AbstractComponent {
 
   setSubmitFormHandler(handler) {
     this.getElement().addEventListener(`submit`, handler);
+  }
+
+  setFavoriteButtonClickHandler(handler) {
+    this.getElement().querySelector(`.event__favorite-icon`).addEventListener(`click`, handler);
+  }
+
+  recoveryListeners() {
+    this._subscribeOnEvents();
+  }
+
+  _subscribeOnEvents() {
+    const element = this.getElement();
+
+    element.querySelector(`.event__type-list`).addEventListener(`click`, (evt) => {
+      if (evt.target.tagName === `LABEL`) {
+        this._event = Object.assign({}, this._event, {
+          type: evt.target.textContent,
+        });
+        this.rerender();
+      }
+    });
   }
 }

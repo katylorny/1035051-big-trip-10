@@ -3,7 +3,7 @@ const EVENTS_COUNT = 4;
 import {getRandomArrayElement, getRandomArrayElements, getRandomNumber} from "../utils/common";
 
 const DESCRIPTION = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras aliquet varius magna, non porta ligula feugiat eget. Fusce tristique felis at fermentum pharetra. Aliquam id orci ut lectus varius viverra. Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante. Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum. Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui. Sed sed nisi sed augue convallis suscipit in sed felis. Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.`;
-export const TYPES_MOVE = [`bus`, `drive`, `flight`, `ship`, `taxi`, `train`, `transport`, `trip`];
+export const TYPES_MOVE = [`bus`, `drive`, `flight`, `ship`, `taxi`, `train`, `transport`];
 export const TYPES_STAY = [`check-in`, `restaurant`, `sightseeing`];
 const TYPES = TYPES_MOVE.concat(TYPES_STAY);
 export const CITIES = [`Moscow`, `Kislovodsk`, `Vinnitsa`, `Tula`, `Orel`];
@@ -15,7 +15,7 @@ const PRICE_MIN = 1;
 export const DESCRIPTION_ARRAY = DESCRIPTION.split(`. `);
 
 export const generateDescription = () => { // надо шото делать с тем что может выпасть 0(((
-  return getRandomArrayElements(DESCRIPTION_ARRAY, 3);
+  return getRandomArrayElements(DESCRIPTION_ARRAY, 3).join(`\n`);
 };
 
 // const generateType = () => {
@@ -33,6 +33,14 @@ export const generatePhotosArray = () => {
   return photos;
 };
 
+const citiesWithDescription = CITIES.map((city1) => {
+  return {
+    city: city1,
+    description: generateDescription(),
+    photos: generatePhotosArray(),
+  };
+});
+
 export const OFFERS = [
   {name: `Add luggage`, type: `luggage`, cost: 10},
   {name: `Switch to comfort class`, type: `comfort`, cost: 150},
@@ -40,9 +48,17 @@ export const OFFERS = [
   {name: `Choose seats`, type: `seats`, cost: 9},
 ];
 
-const generateAddOptions = () => {
-  return getRandomArrayElements(OFFERS, 2);
-};
+const typesWithOffers = TYPES.map((nameOfType) => {
+  return {
+    type: nameOfType,
+    offers: getRandomArrayElements(OFFERS, 4),
+  };
+});
+
+
+// const generateAddOptions = () => {
+//   return getRandomArrayElements(OFFERS, 2);
+// };
 
 const getRandomDate = () => {
   const targetDate = new Date();
@@ -63,17 +79,20 @@ const getRandomNextDate = (date) => {
 
 export const generateEvent = () => {
   const randomDate = getRandomDate();
+  const cityWithDescription = getRandomArrayElement(citiesWithDescription);
+  const typeOfEvent = getRandomArrayElement(TYPES);
+  const options = typesWithOffers.find((it) => it.type === typeOfEvent);
 
   return {
-    // type: generateType(),
-    type: getRandomArrayElement(TYPES),
-    city: getRandomArrayElement(CITIES),
-    photos: generatePhotosArray(),
-    description: generateDescription(),
+    type: typeOfEvent,
+    city: cityWithDescription.city,
+    photos: cityWithDescription.photos,
+    description: cityWithDescription.description,
     price: getRandomNumber(PRICE_MIN, PRICE_MAX),
     startTime: new Date(randomDate),
     endTime: new Date(getRandomNextDate(randomDate)),
-    options: generateAddOptions()
+    options: options.offers,
+    isFavorite: false,
   };
 };
 

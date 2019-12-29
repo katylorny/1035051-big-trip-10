@@ -1,38 +1,18 @@
-// import {events} from "../mocks/event";
 import TripComponent from "../components/create-trip";
-import {render, RENDER_POSITION, replace} from "../utils/render";
+import {render, RENDER_POSITION} from "../utils/render";
 import NoPointsComponent from "../components/no-points";
 import CardsComponent from "../components/create-cards";
-import CardComponent from '../components/create-card.js';
-import EditEventComponent from '../components/edit-event.js';
 import SortComponent, {SORT_TYPES} from "../components/sort";
+import PointController from "./point-controller";
+// import {events} from "../mocks/event";
 
-
-const renderCard = (event, eventsList) => {
-  const card = new CardComponent(event);
-  const editCard = new EditEventComponent(event);
-
-  const onEscKeyDown = (evt) => {
-    const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
-
-    if (isEscKey) {
-      replaceEditToCard();
-    }
-  };
-
-  const replaceEditToCard = () => {
-    replace(card, editCard);
-  };
-  const replaceCardToEdit = () => {
-    replace(editCard, card);
-    document.addEventListener(`keydown`, onEscKeyDown, {once: true});
-  };
-
-  card.setRollupButtonClickHandler(replaceCardToEdit);
-  editCard.setRollupButtonClickHandler(replaceEditToCard);
-  editCard.setSubmitFormHandler(replaceEditToCard);
-
-  render(eventsList, card.getElement(), RENDER_POSITION.BEFOREEND);
+const renderEvents = (events, cardsList, onDataChange, onViewChange) => {
+  return (events.slice().map((event) => {
+    const pointController = new PointController(cardsList, onDataChange, onViewChange);
+    // console.log(pointController);
+    pointController.render(event, onDataChange);
+    return pointController;
+  }));
 };
 
 export default class TripController {
@@ -46,6 +26,9 @@ export default class TripController {
     this._sortComponent = new SortComponent();
     this._events = [];
     this._onSortTypeChange = this._onSortTypeChange.bind(this);
+    this._onDataChange = this._onDataChange.bind(this);
+    this._onViewChange = this._onViewChange.bind(this);
+    this._controllers = [];
   }
 
   render(events) {
@@ -59,9 +42,7 @@ export default class TripController {
 
       this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
 
-      this._events.slice().map((event) => {
-        renderCard(event, this._cardsList);
-      });
+      this._controllers = renderEvents(this._events, this._cardsList, this._onDataChange, this._onViewChange);
 
       const calculatePrice = () => {
         let price = 0;
@@ -93,8 +74,21 @@ export default class TripController {
     }
 
     this._cardsList.innerHTML = ``;
-    sortedEvents.map((it) => {
-      renderCard(it, this._cardsList);
-    });
+    renderEvents(sortedEvents, this._cardsList, this._onDataChange, this._onViewChange);
+  }
+
+  _onDataChange(pointController, oldData, newData) {
+    const index = this._events.findIndex((it) => it === oldData);
+    if (index === -1) {
+      return;
+    }
+
+    this._events = [].concat(this._events.slice(0, index), newData, this._events.slice(index + 1));
+    pointController.render(this._events[index]);
+
+  }
+
+  _onViewChange() {
+    this._controllers.forEach((it) => it.setDefaultView());
   }
 }
