@@ -63,9 +63,12 @@ const typesWithOffers = TYPES.map((nameOfType) => {
 const getRandomDate = () => {
   const targetDate = new Date();
   const sign = Math.random() > 0.5 ? 1 : -1;
-  const diffValue = sign * getRandomNumber(0, 7);
+  // const diffValue = sign * getRandomNumber(0, 7);
 
-  targetDate.setDate(targetDate.getDate() + diffValue);
+  // targetDate.setDate(targetDate.getDate() + diffValue);
+  targetDate.setDate(targetDate.getDate() + sign * getRandomNumber(0, 7));
+  targetDate.setHours(targetDate.getHours() + sign * getRandomNumber(0, 24));
+  targetDate.setMinutes(targetDate.getMinutes() + sign * getRandomNumber(0, 60));
 
   return targetDate;
 };
@@ -104,5 +107,5 @@ export const generateEvents = (count) => {
 };
 
 export const events = generateEvents(EVENTS_COUNT);
-console.log(11, events)
+
 

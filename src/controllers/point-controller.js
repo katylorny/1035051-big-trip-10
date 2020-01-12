@@ -73,7 +73,7 @@ export default class PointController {
   }
 
   _replaceCardToEdit() {
-    // console.log(this._eventComponent)
+
     this._onViewChange();
     replace(this._eventEditComponent, this._eventComponent);
     document.addEventListener(`keydown`, (evt) => this._onEscKeyDown(evt), {once: true});

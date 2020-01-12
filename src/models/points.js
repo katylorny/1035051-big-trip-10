@@ -18,7 +18,6 @@ export default class PointsModel {
   }
 
   getFilteredPoints() {
-    console.log(`getfilteredPoints`)
     return getPointsByFilter(this._points, this._activeFilterType); //
   }
 

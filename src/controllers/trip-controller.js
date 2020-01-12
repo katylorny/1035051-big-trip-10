@@ -1,15 +1,17 @@
 import TripComponent from "../components/create-trip";
-import {render, RENDER_POSITION} from "../utils/render";
+import {render, RENDER_POSITION, replace} from "../utils/render";
 import NoPointsComponent from "../components/no-points";
 import CardsComponent from "../components/create-cards";
 import SortComponent, {SORT_TYPES} from "../components/sort";
 import PointController from "./point-controller";
 import {getSortedPoints} from "../utils/sort";
+import Days from "../components/days";
+import moment from "moment/moment";
 
 const renderEvents = (events, cardsList, onDataChange, onViewChange) => {
   return (events.slice().map((event) => {
     const pointController = new PointController(cardsList, onDataChange, onViewChange);
-    // console.log(pointController);
+
     pointController.render(event, onDataChange);
     return pointController;
   }));
@@ -31,9 +33,12 @@ export default class TripController {
     this._onViewChange = this._onViewChange.bind(this);
     this._controllers = [];
 
+    this._activeSortType = SORT_TYPES.EVENT;
+
     this._updatePoints = this._updatePoints.bind(this);
 
     this._model.getFunctionFromTripController(this._updatePoints);
+    this._daysComponent = null;
   }
 
   render() {
@@ -50,10 +55,14 @@ export default class TripController {
       render(this._tripInfoElement, this._tripComponent, RENDER_POSITION.AFTERBEGIN);
       render(this._container, this._cardsList);
 
+
       this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
 
-      this._controllers = renderEvents(this._events, this._cardsList, this._onDataChange, this._onViewChange);
-
+      if (this._activeSortType === SORT_TYPES.EVENT) {
+        this._renderWithDays();
+      } else {
+        this._controllers = renderEvents(this._events, this._cardsList, this._onDataChange, this._onViewChange);
+      }
       const calculatePrice = () => {
         let price = 0;
         this._events.forEach((el) => {
@@ -64,6 +73,46 @@ export default class TripController {
       const tripCost = document.querySelector(`.trip-info__cost-value`);
       tripCost.textContent = calculatePrice();
     }
+  }
+
+
+  _renderWithDays() {
+    const startDates = this._events.map((event) => { // тут лежат стартовые даты
+      return moment(event.startTime).format(`YYYY MM DD`);
+    });
+
+    const firstDate = startDates[0];
+    const firstNumber = 1;
+
+    const startDatesSet = new Set(startDates); // стартовые даты без повторов
+
+    const days = Array.from(startDatesSet).map((date) => {
+      return {
+        date: date,
+        number: firstNumber + moment.duration(moment(date) - moment(firstDate)).days(),
+      }
+    });
+
+
+    const oldDaysComponent = this._daysComponent;
+
+    this._daysComponent = new Days(days);
+
+    if (oldDaysComponent) {
+      replace(this._daysComponent, oldDaysComponent);
+    } else {
+      render(this._cardsList, this._daysComponent.getElement());
+    }
+    this._controllers = [];
+    days.forEach((day) => {
+      const pointsOfThisDay = this._events.filter((event) => { // выбираем все карточки конкретного дня
+        return moment(event.startTime).format(`YYYY MM DD`) === day.date;
+      });
+      const place = this._daysComponent.getElement().querySelector(`#dayNumber${day.number}`); // куда рендерим карточки, ul, внутри 1 дня
+      const dayControllers = renderEvents(pointsOfThisDay, place, this._onDataChange, this._onViewChange);
+      this._controllers = this._controllers.concat(dayControllers);
+    });
+
   }
 
   _updatePoints() {
@@ -77,8 +126,14 @@ export default class TripController {
     const sortedPoints = getSortedPoints(this._events, sortType);
 
     this._cardsList.innerHTML = ``;
-    this._controllers = renderEvents(sortedPoints, this._cardsList, this._onDataChange, this._onViewChange);
-    console.log(444, this._controllers)
+
+    if (sortType === SORT_TYPES.EVENT) {
+      this._renderWithDays();
+    } else {
+      this._controllers = renderEvents(sortedPoints, this._cardsList, this._onDataChange, this._onViewChange);
+    }
+
+    this._activeSortType = sortType;
   }
 
   _onDataChange(pointController, oldData, newData) {
@@ -93,6 +148,7 @@ export default class TripController {
   }
 
   _onViewChange() {
+    console.log(this._controllers)
     this._controllers.forEach((it) => it.setDefaultView());
   }
 }

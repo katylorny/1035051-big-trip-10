@@ -27,7 +27,6 @@ export default class Trip extends AbstractComponent {
   }
 
   getTemplate() {
-    console.log("модель create trip", this._model);
     return createTripTemplate(this._model);
   }
 }

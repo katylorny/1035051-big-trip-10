@@ -48,10 +48,6 @@ export const timeDuration = (startTime, endTime) => {
   const m = moment.duration(b - a);
 
   return m;
-  // console.log(11, m)
-  //  console.log(22, m.days())
-  //  console.log(22, m.hours())
-  // console.log(33, m.minutes())
 };
 
 export const formatDateTime = (date) => {
