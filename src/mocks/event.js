@@ -84,6 +84,7 @@ export const generateEvent = () => {
   const options = typesWithOffers.find((it) => it.type === typeOfEvent);
 
   return {
+    id: String(new Date() + Math.random()),
     type: typeOfEvent,
     city: cityWithDescription.city,
     photos: cityWithDescription.photos,
@@ -103,4 +104,5 @@ export const generateEvents = (count) => {
 };
 
 export const events = generateEvents(EVENTS_COUNT);
+console.log(11, events)
 

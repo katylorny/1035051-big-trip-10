@@ -1,7 +1,7 @@
 import CardComponent from "../components/create-card";
 import {render, RENDER_POSITION} from "../utils/render";
 import EditEventComponent from "../components/edit-event";
-import {replace} from "../utils/render";
+import {replace, remove} from "../utils/render";
 
 
 const MODES = {
@@ -47,6 +47,18 @@ export default class PointController {
     }
   }
 
+  setDefaultView() {
+    if (this._mode === MODES.EDIT) {
+      this._replaceEditToCard();
+    }
+  }
+
+  destroy() {
+    remove(this._eventComponent);
+    remove(this._eventEditComponent);
+    document.removeEventListener(`keydown`, this._onEscKeyDown); // TODO: мб можно без этого
+  }
+
   _onEscKeyDown(evt) {
     const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
 
@@ -66,11 +78,5 @@ export default class PointController {
     replace(this._eventEditComponent, this._eventComponent);
     document.addEventListener(`keydown`, (evt) => this._onEscKeyDown(evt), {once: true});
     this._mode = MODES.EDIT;
-  }
-
-  setDefaultView() {
-    if (this._mode === MODES.EDIT) {
-      this._replaceEditToCard();
-    }
   }
 }

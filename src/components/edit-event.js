@@ -5,6 +5,7 @@ import {formatDateTime} from "../utils/common";
 // import AbstractComponent from "./abstract-component";
 import AbstractSmartComponent from "./abstract-smart-component";
 import flatpickr from 'flatpickr';
+import moment from 'moment';
 
 const createTypesTemplate = (arr) => {
   return (
@@ -51,7 +52,6 @@ const createEditEventTemplate = (event) => {
 
   const {type, city, photos, description, price, startTime, endTime, options, isFavorite} = event;
 
-  // console.log(event)
   return (
     `<form class="event  event--edit" action="#" method="post">
                     <header class="event__header">
@@ -84,7 +84,7 @@ const createEditEventTemplate = (event) => {
                         <label class="event__label  event__type-output" for="event-destination-1">
                           ${type} ${TYPES_STAY.includes(type) ? `in` : `to`}
                         </label>
-                        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}" list="destination-list-1">
+                        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}" list="destination-list-1" autocomplete="off">
                         <datalist id="destination-list-1">
                           ${createCitiesListTemplate}
                         </datalist>
@@ -94,12 +94,12 @@ const createEditEventTemplate = (event) => {
                         <label class="visually-hidden" for="event-start-time-1">
                           From
                         </label>
-                        <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${formatDateTime(startTime)}">
+                        <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${moment(startTime).format(`DD/MM/YYYY HH:mm`)}">
                         &mdash;
                         <label class="visually-hidden" for="event-end-time-1">
                           To
                         </label>
-                        <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${formatDateTime(endTime)}">
+                        <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${moment(endTime).format(`DD/MM/YYYY HH:mm`)}">
                       </div>
 
                       <div class="event__field-group  event__field-group--price">

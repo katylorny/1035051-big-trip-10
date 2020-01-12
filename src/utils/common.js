@@ -45,8 +45,6 @@ export const timeFormat = (date) => {
 export const timeDuration = (startTime, endTime) => {
   const a = moment(startTime);
   const b = moment(endTime);
-  // return moment.utc(moment.duration(endTime) - moment.duration(startTime)).format('HH:mm')
-  // return moment.duration(b.diff(a));
   const m = moment.duration(b - a);
 
   return m;
