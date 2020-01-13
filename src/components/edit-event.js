@@ -1,8 +1,6 @@
 import {CITIES} from "../mocks/event";
 import {TYPES_MOVE} from "../mocks/event";
 import {TYPES_STAY} from "../mocks/event";
-import {formatDateTime} from "../utils/common";
-// import AbstractComponent from "./abstract-component";
 import AbstractSmartComponent from "./abstract-smart-component";
 import flatpickr from 'flatpickr';
 import moment from 'moment';

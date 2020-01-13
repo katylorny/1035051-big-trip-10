@@ -20,7 +20,7 @@ export default class FilterController {
       return {
         title: filterType,
         isChecked: filterType === this._activeFilterType,
-      }
+      };
     });
 
     const oldComponent = this._filterComponent;

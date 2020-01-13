@@ -14,7 +14,7 @@ const createDayTemplate = (day) => {
 
               <ul class="trip-events__list" id="dayNumber${number}"></ul>
             </li>`
-  )
+  );
 };
 
 
@@ -22,7 +22,7 @@ const createDaysTemplate = (days) => {
   const daysMarkup = days.map((day) => createDayTemplate(day)).join(`\n`);
   return (
     `<ul class="trip-days">${daysMarkup}</ul>`
-  )
+  );
 };
 
 

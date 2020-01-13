@@ -1,10 +1,4 @@
-import {generateFilters} from "../mocks/filter";
-
 import AbstractComponent from "./abstract-component";
-
-// const generateFilterMarkup = () => {
-//
-// };
 
 const generateFilterMarkup = (filters) => {
   return (
@@ -17,13 +11,13 @@ const generateFilterMarkup = (filters) => {
      </div>`
       );
     }).join(`\n`)
-  )
+  );
 };
 
 const createFilterTemplate = (filters) => { // Фильтры
 
   const filterMarkup = generateFilterMarkup(filters);
-  // console.log(`filtercomp createFilterTemplate`, filterMarkup);
+
   return (
     `<form class="trip-filters" action="#" method="get">
               ${filterMarkup}
@@ -31,8 +25,6 @@ const createFilterTemplate = (filters) => { // Фильтры
             </form>`
   );
 };
-
-
 
 export default class Filter extends AbstractComponent {
 

@@ -53,7 +53,7 @@ export default class PointController {
     }
   }
 
-  destroy() {
+  destroyPoint() {
     remove(this._eventComponent);
     remove(this._eventEditComponent);
     document.removeEventListener(`keydown`, this._onEscKeyDown); // TODO: мб можно без этого

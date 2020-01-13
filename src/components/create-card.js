@@ -1,10 +1,6 @@
-// import {generatedEvents} from "../mocks/event";
 import {TYPES_STAY} from "../mocks/event";
-// import {TYPES_MOVE} from "../mocks/event";
-import {castTimeDateFormat, timeDuration, timeFormat} from "../utils/common";
+import {castTimeDateFormat, timeDuration} from "../utils/common";
 import AbstractComponent from "./abstract-component";
-// import {events} from "../mocks/event";
-// import {OFFERS} from "../mocks/event";
 import moment from 'moment';
 
 const createOffersTemplate = (array) => {
@@ -59,9 +55,6 @@ export const createCardTemplate = (cardObject) => {
                 </li>`
   );
 };// trip-events__item
-
-// export const eventsMarkup = events.slice(1).map(createCardTemplate);
-
 
 export default class Card extends AbstractComponent {
   constructor(event) {
