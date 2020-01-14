@@ -33,9 +33,9 @@ export const generatePhotosArray = () => {
   return photos;
 };
 
-const citiesWithDescription = CITIES.map((city1) => {
+const citiesWithDescription = CITIES.map((city) => {
   return {
-    city: city1,
+    city,
     description: generateDescription(),
     photos: generatePhotosArray(),
   };
@@ -83,6 +83,8 @@ const getRandomNextDate = (date) => {
 export const generateEvent = () => {
   const randomDate = getRandomDate();
   const cityWithDescription = getRandomArrayElement(citiesWithDescription);
+  // console.log(`citiesWithDescription`, citiesWithDescription)
+  // console.log(`cityWithDescription`, cityWithDescription)
   const typeOfEvent = getRandomArrayElement(TYPES);
   const options = typesWithOffers.find((it) => it.type === typeOfEvent);
 

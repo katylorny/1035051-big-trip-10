@@ -27,7 +27,6 @@ export default class PointsModel {
       return;
     }
     this._points = [].concat(this._points.slice(0, index), newPoint, this._points.slice(index + 1));
-    // нужно отрендерить
   }
 
   getFunctionFromTripController(handler) {

@@ -4,15 +4,41 @@ import {TYPES_STAY} from "../mocks/event";
 import AbstractSmartComponent from "./abstract-smart-component";
 import flatpickr from 'flatpickr';
 import moment from 'moment';
+import {getRandomNumber} from "../utils/common";
+
+const OPTION_NAME_PREFIX = `event-offer-`;
+
+
+const parseFormData = (form, formData) => {
+
+  const offers = Array.from(this.querySelectorAll(`.event__offer-selector`).map((el) => {
+    return {
+      name: el.querySelector(`.event__offer-title`).textContent,
+      type: el.querySelector(`.event__offer-checkbox`).name.substring(OPTION_NAME_PREFIX.length),
+      price: el.querySelector(`.event__offer-price`).textContent,
+      isChecked: el.querySelector(`.event__offer-checkbox`).checked
+    }
+  }));
+  return {
+    // id: String(new Date() + Math.random()),
+    // type: typeOfEvent,
+    city: formData.get(`event-destination`),
+    price: formData.get(`event-price`),
+    startTime: formData.get(`event-start-time`),
+    endTime: formData.get(`event-end-time`),
+    // options: formData.getAll(`event-offer-*`),
+    // isFavorite: false,
+  }
+};
 
 const createTypesTemplate = (arr) => {
   return (
     arr.map((typeOfEvent) => {
       return (
         `<div class="event__type-item">
-      <input id="event-type-${typeOfEvent}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${typeOfEvent}">
-      <label class="event__type-label  event__type-label--${typeOfEvent}" for="event-type-${typeOfEvent}-1">${typeOfEvent}</label>
-     </div>`
+          <input id="event-type-${typeOfEvent}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${typeOfEvent}">
+          <label class="event__type-label  event__type-label--${typeOfEvent}" for="event-type-${typeOfEvent}-1">${typeOfEvent}</label>
+         </div>`
       );
     }).join(`\n`)
   );
@@ -51,14 +77,15 @@ const createEditEventTemplate = (event) => {
   const {type, city, photos, description, price, startTime, endTime, options, isFavorite} = event;
 
   return (
-    `<form class="event  event--edit" action="#" method="post">
+    `<li class="trip-events__item">
+        <form class="event  event--edit" action="#" method="post">
                     <header class="event__header">
                       <div class="event__type-wrapper">
                         <label class="event__type  event__type-btn" for="event-type-toggle-1">
                           <span class="visually-hidden">Choose event type</span>
                           <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
                         </label>
-                        <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+                        <input  class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox" name="event-rr">
 
                         <div class="event__type-list">
                           <fieldset class="event__type-group">
@@ -149,9 +176,11 @@ const createEditEventTemplate = (event) => {
                         </div>
                       </section>
                     </section>
-                  </form>`
+                  </form>
+     </li>`
   );
 };
+
 
 export default class EditEvent extends AbstractSmartComponent {
   constructor(event) {
@@ -170,7 +199,10 @@ export default class EditEvent extends AbstractSmartComponent {
   }
 
   setSubmitFormHandler(handler) {
-    this.getElement().addEventListener(`submit`, handler);
+    this.getElement().addEventListener(`submit`, (evt) => {
+      evt.preventDefault(); // TODO здесь отменена отправка формы
+      handler()
+    });
   }
 
   setFavoriteButtonClickHandler(handler) {
@@ -179,6 +211,14 @@ export default class EditEvent extends AbstractSmartComponent {
 
   recoveryListeners() {
     this._subscribeOnEvents();
+  }
+
+  getData() {
+    // const form = this.getElement().querySelector(`.event--edit`);
+    // console.log("this.getElement().querySelector(`.event--edit`)", this.getElement().querySelector(`.event--edit`))
+    const formData = new FormData(this.getElement().querySelector(`.event--edit`));
+
+    console.log('...formData', ...formData);
   }
 
   _subscribeOnEvents() {

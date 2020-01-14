@@ -151,7 +151,7 @@ export default class TripController {
       this._noDaysComponent = null;
     }
 
-    this.render(); // TODO:
+    this.render();
   }
 
   _onSortTypeChange(sortType) {
@@ -169,13 +169,8 @@ export default class TripController {
   }
 
   _onDataChange(pointController, oldData, newData) {
-    // const index = this._events.findIndex((it) => it === oldData);
-    // if (index === -1) {
-    //   return;
-    // }
-    //
-    // this._events = [].concat(this._events.slice(0, index), newData, this._events.slice(index + 1));
-    // pointController.render(this._events[index]);
+    this._model.updatePointsData(oldData.id, newData);
+    pointController.render(newData);
   }
 
   _onViewChange() {

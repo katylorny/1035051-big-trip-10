@@ -31,13 +31,20 @@ export default class PointController {
 
     this._eventComponent.setRollupButtonClickHandler(() => this._replaceCardToEdit());
     this._eventEditComponent.setRollupButtonClickHandler(() => this._replaceEditToCard());
-    this._eventEditComponent.setSubmitFormHandler(() => this._replaceEditToCard());
+
+    this._eventEditComponent.setSubmitFormHandler(() => {
+      // this._onDataChange(this, event, )
+      this._eventEditComponent.getData();
+      this._replaceEditToCard();
+    });
 
     this._eventEditComponent.setFavoriteButtonClickHandler(() => {
       this._onDataChange(this, event, Object.assign({}, event, {
         isFavorite: !event.isFavorite
       }));
     });
+
+
 
     if (oldEventComponent && oldEventEditComponent) {
       replace(this._eventComponent, oldEventComponent);
