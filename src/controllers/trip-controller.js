@@ -169,6 +169,8 @@ export default class TripController {
   }
 
   _onDataChange(pointController, oldData, newData) {
+    // console.log(`oldData`, oldData)
+    // console.log(`newData`, newData)
     this._model.updatePointsData(oldData.id, newData);
     pointController.render(newData);
   }

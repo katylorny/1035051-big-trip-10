@@ -4,6 +4,7 @@ import EditEventComponent from "../components/edit-event";
 import {replace, remove} from "../utils/render";
 
 
+
 const MODES = {
   DEFAULT: `default`,
   EDIT: `edit`,
@@ -15,9 +16,12 @@ export default class PointController {
     this._onDataChange = onDataChange;
     this._onViewChange = onViewChange;
 
+    this._onEscKeyDown = this._onEscKeyDown.bind(this);
+    // this._cityChangeHandler = this._cityChangeHandler.bind(this);
     this._eventComponent = null;
     this._eventEditComponent = null;
     this._mode = MODES.DEFAULT;
+
   }
 
   render(event) {
@@ -27,14 +31,21 @@ export default class PointController {
 
     this._eventComponent = new CardComponent(event);
     this._eventEditComponent = new EditEventComponent(event);
-    this._eventEditComponent.recoveryListeners();
 
-    this._eventComponent.setRollupButtonClickHandler(() => this._replaceCardToEdit());
-    this._eventEditComponent.setRollupButtonClickHandler(() => this._replaceEditToCard());
+
+    this._eventComponent.setRollupButtonClickHandler(() => {
+        this._replaceCardToEdit();
+        document.addEventListener(`keydown`, this._onEscKeyDown);
+      }
+    );
+
+    this._eventEditComponent.setRollupButtonClickHandler(() => {
+      this._replaceEditToCard();
+    });
 
     this._eventEditComponent.setSubmitFormHandler(() => {
-      // this._onDataChange(this, event, )
-      this._eventEditComponent.getData();
+      this._onDataChange(this, event, this._eventEditComponent.getData());
+
       this._replaceEditToCard();
     });
 
@@ -44,7 +55,9 @@ export default class PointController {
       }));
     });
 
-
+    this._eventEditComponent.setDeleteButtonHandler(() => {
+      this._onDataChange(this, event, null);
+    });
 
     if (oldEventComponent && oldEventEditComponent) {
       replace(this._eventComponent, oldEventComponent);
@@ -52,6 +65,7 @@ export default class PointController {
     } else {
       render(this._container, this._eventComponent.getElement(), RENDER_POSITION.BEFOREEND);
     }
+    // this._eventEditComponent.recoveryListeners();
   }
 
   setDefaultView() {
@@ -75,15 +89,16 @@ export default class PointController {
   }
 
   _replaceEditToCard() {
+    document.removeEventListener(`keydown`, this._onEscKeyDown);
+    this._eventEditComponent.reset();
+    this._eventEditComponent.rerender();
     replace(this._eventComponent, this._eventEditComponent);
     this._mode = MODES.DEFAULT;
   }
 
   _replaceCardToEdit() {
-
     this._onViewChange();
     replace(this._eventEditComponent, this._eventComponent);
-    document.addEventListener(`keydown`, (evt) => this._onEscKeyDown(evt), {once: true});
     this._mode = MODES.EDIT;
   }
 }

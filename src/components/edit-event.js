@@ -4,39 +4,19 @@ import {TYPES_STAY} from "../mocks/event";
 import AbstractSmartComponent from "./abstract-smart-component";
 import flatpickr from 'flatpickr';
 import moment from 'moment';
-import {getRandomNumber} from "../utils/common";
+import {getRandomNumber, reformatDate} from "../utils/common";
+import {citiesWithDescription} from "../mocks/event";
+import {typesWithOffers} from "../mocks/event";
+
 
 const OPTION_NAME_PREFIX = `event-offer-`;
 
-
-const parseFormData = (form, formData) => {
-
-  const offers = Array.from(this.querySelectorAll(`.event__offer-selector`).map((el) => {
-    return {
-      name: el.querySelector(`.event__offer-title`).textContent,
-      type: el.querySelector(`.event__offer-checkbox`).name.substring(OPTION_NAME_PREFIX.length),
-      price: el.querySelector(`.event__offer-price`).textContent,
-      isChecked: el.querySelector(`.event__offer-checkbox`).checked
-    }
-  }));
-  return {
-    // id: String(new Date() + Math.random()),
-    // type: typeOfEvent,
-    city: formData.get(`event-destination`),
-    price: formData.get(`event-price`),
-    startTime: formData.get(`event-start-time`),
-    endTime: formData.get(`event-end-time`),
-    // options: formData.getAll(`event-offer-*`),
-    // isFavorite: false,
-  }
-};
-
-const createTypesTemplate = (arr) => {
+const createTypesTemplate = (arr, type) => {
   return (
     arr.map((typeOfEvent) => {
       return (
         `<div class="event__type-item">
-          <input id="event-type-${typeOfEvent}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${typeOfEvent}">
+          <input id="event-type-${typeOfEvent}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${typeOfEvent}" ${typeOfEvent === type ? `checked` : ``}>
           <label class="event__type-label  event__type-label--${typeOfEvent}" for="event-type-${typeOfEvent}-1">${typeOfEvent}</label>
          </div>`
       );
@@ -46,10 +26,10 @@ const createTypesTemplate = (arr) => {
 
 const createOfferTemplate = (arr) => {
   return arr.map((offer) => {
-    const {name: offerName, type: offerType, cost: offerPrice} = offer;
+    const {name: offerName, type: offerType, cost: offerPrice, isChecked} = offer;
     return (
       `<div class="event__offer-selector">
-       <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offerType}-1" type="checkbox" name="event-offer-${offerType}" checked>
+       <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offerType}-1" type="checkbox" name="event-offer-${offerType}" ${isChecked ? `checked` : ``}>
        <label class="event__offer-label" for="event-offer-${offerType}-1">
          <span class="event__offer-title">${offerName}</span>
          &plus;
@@ -72,9 +52,10 @@ const createPhotosTemplate = (array) => {
   }).join(`\n`);
 };
 
-const createEditEventTemplate = (event) => {
+const createEditEventTemplate = (event, additionalEvent) => {
 
-  const {type, city, photos, description, price, startTime, endTime, options, isFavorite} = event;
+  const {isFavorite} = event;
+  const {type, city, photos, description, price, startTime, endTime, options} = additionalEvent;
 
   return (
     `<li class="trip-events__item">
@@ -91,14 +72,14 @@ const createEditEventTemplate = (event) => {
                           <fieldset class="event__type-group">
                             <legend class="visually-hidden">Transfer</legend>
 
-                            ${createTypesTemplate(TYPES_MOVE)}
+                            ${createTypesTemplate(TYPES_MOVE, type)}
 
                           </fieldset>
 
                           <fieldset class="event__type-group">
                             <legend class="visually-hidden">Activity</legend>
 
-                            ${createTypesTemplate(TYPES_STAY)}
+                            ${createTypesTemplate(TYPES_STAY, type)}
 
                           </fieldset>
                         </div>
@@ -186,52 +167,150 @@ export default class EditEvent extends AbstractSmartComponent {
   constructor(event) {
     super();
     this._event = event;
+    this._additionalEvent = Object.assign({}, this._event);
+
     this._flatpickr = null;
     this._applyFlatpickr();
+
+    this._submitHandler = null;
+    this._deleteButtonHandler = null;
+    this._rollupButtonClickHandler = null;
+
+    this._subscribeOnEvents();
+
+    this.reset = this.reset.bind(this);
   }
 
   getTemplate() {
-    return createEditEventTemplate(this._event);
+    return createEditEventTemplate(this._event, this._additionalEvent);
   }
+
+  removeElement() {
+    if (this._flatpickr) {
+      this._flatpickr.destroy();
+      this._flatpickr = null;
+    }
+
+    super.removeElement();
+  }
+
+  rerender() {
+    super.rerender();
+    this._applyFlatpickr();
+  }
+
+  reset() {
+    this._additionalEvent = Object.assign({}, this._event);
+    this.rerender();
+  };
 
   setRollupButtonClickHandler(handler) {
     this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, handler);
+    this._rollupButtonClickHandler = handler;
   }
 
   setSubmitFormHandler(handler) {
     this.getElement().addEventListener(`submit`, (evt) => {
-      evt.preventDefault(); // TODO здесь отменена отправка формы
-      handler()
+      evt.preventDefault(); // TODO чтобы не отправлялось по нажатию enter
+      handler();
     });
+    this._submitHandler = handler;
+  }
+
+  setDeleteButtonHandler(handler) {
+    this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, handler);
+    this._deleteButtonHandler = handler;
   }
 
   setFavoriteButtonClickHandler(handler) {
+
     this.getElement().querySelector(`.event__favorite-icon`).addEventListener(`click`, handler);
   }
 
   recoveryListeners() {
+
+    this.setSubmitFormHandler(this._submitHandler);
+    this.setDeleteButtonHandler(this._deleteButtonHandler);
+    this.setRollupButtonClickHandler(this._rollupButtonClickHandler);
+
     this._subscribeOnEvents();
   }
 
   getData() {
-    // const form = this.getElement().querySelector(`.event--edit`);
-    // console.log("this.getElement().querySelector(`.event--edit`)", this.getElement().querySelector(`.event--edit`))
-    const formData = new FormData(this.getElement().querySelector(`.event--edit`));
+    const form = this.getElement().querySelector(`.event--edit`);
+    const formData = new FormData(form);
 
-    console.log('...formData', ...formData);
+    console.log(`...formData`, ...formData);
+    return this._parseFormData(formData);
   }
+
+  _parseFormData(formData) {
+
+    const offers = Array.from(this.getElement().querySelectorAll(`.event__offer-selector`)).map((el) => {
+      return {
+        name: el.querySelector(`.event__offer-title`).textContent,
+        type: el.querySelector(`.event__offer-checkbox`).name.substring(OPTION_NAME_PREFIX.length),
+        cost: el.querySelector(`.event__offer-price`).textContent,
+        isChecked: el.querySelector(`.event__offer-checkbox`).checked
+      }
+    });
+
+
+    return {
+      // id: String(new Date() + Math.random()),
+      type: formData.get(`event-type`),
+      city: formData.get(`event-destination`),
+      description: this.getElement().querySelector(`.event__destination-description`).textContent,
+      photos: Array.from(this.getElement().querySelectorAll(`.event__photo`)).map((photo) => photo.src),
+      price: formData.get(`event-price`),
+      startTime: reformatDate(formData.get(`event-start-time`)),
+      endTime: reformatDate(formData.get(`event-end-time`)),
+      options: offers,
+      isFavorite: formData.has(`event-favorite`),
+    }
+  };
 
   _subscribeOnEvents() {
     const element = this.getElement();
 
     element.querySelector(`.event__type-list`).addEventListener(`click`, (evt) => {
+      // console.log(`evt.target.textContent`, evt.target.textContent);
       if (evt.target.tagName === `LABEL`) {
-        this._event = Object.assign({}, this._event, {
+        this._additionalEvent = Object.assign({}, this._additionalEvent, {
           type: evt.target.textContent,
+        });
+
+        const index = typesWithOffers.findIndex((el) => el.type === evt.target.textContent);
+        this._additionalEvent = Object.assign({}, this._additionalEvent, {
+          options: typesWithOffers[index].offers,
         });
         this.rerender();
       }
     });
+
+    const destinationInput = element.querySelector(`.event__input--destination`);
+    destinationInput.addEventListener(`focus`, () => {
+      destinationInput.removeAttribute(`value`);
+    });
+
+    destinationInput.addEventListener(`change`, (evt) => {
+      const selectedCityIndex = citiesWithDescription.findIndex((city) => city.city === evt.target.value);
+
+      if (selectedCityIndex === -1) {
+        this.rerender();
+        return;
+      }
+
+      const selectedCity = citiesWithDescription[selectedCityIndex];
+
+      this._additionalEvent = Object.assign({}, this._additionalEvent, {
+        city: selectedCity.city,
+        description: selectedCity.description,
+        photos: selectedCity.photos,
+      });
+      this.rerender();
+    })
+
   }
 
   _applyFlatpickr() {
