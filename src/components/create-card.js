@@ -1,10 +1,7 @@
-// import {generatedEvents} from "../mocks/event";
 import {TYPES_STAY} from "../mocks/event";
-// import {TYPES_MOVE} from "../mocks/event";
-import {castTimeDateFormat, timeDuration, timeFormat} from "../utils/common";
+import {castTimeDateFormat, timeDuration} from "../utils/common";
 import AbstractComponent from "./abstract-component";
-// import {events} from "../mocks/event";
-// import {OFFERS} from "../mocks/event";
+import moment from 'moment';
 
 const createOffersTemplate = (array) => {
   return array.map(({name, cost}) => {
@@ -21,8 +18,6 @@ const createOffersTemplate = (array) => {
 
 export const createCardTemplate = (cardObject) => {
   const {type, city, price, startTime, endTime, options} = cardObject;
-  // const difference = calculateTimeDifference(startTime, endTime);
-  // const [days, hours, minutes] = difference;
   const duration = timeDuration(startTime, endTime);
   const days = duration.days();
   const hours = duration.hours();
@@ -38,9 +33,9 @@ export const createCardTemplate = (cardObject) => {
 
                     <div class="event__schedule">
                       <p class="event__time">
-                        <time class="event__start-time" datetime="${startTime}">${timeFormat(startTime)}</time> 
+                        <time class="event__start-time" datetime="${startTime}">${moment(startTime).format(`HH:mm`)}</time> 
                         &mdash;
-                        <time class="event__end-time" datetime="${endTime}">${timeFormat(endTime)}</time>
+                        <time class="event__end-time" datetime="${endTime}">${moment(endTime).format(`HH:mm`)}</time>
                       </p>
                       <p class="event__duration">${days === 0 ? `` : `${castTimeDateFormat(days)}D`} ${days + hours === 0 ? `` : `${castTimeDateFormat(hours)}H`} ${castTimeDateFormat(minutes)}M </p> 
                     </div>
@@ -60,9 +55,6 @@ export const createCardTemplate = (cardObject) => {
                 </li>`
   );
 };// trip-events__item
-
-// export const eventsMarkup = events.slice(1).map(createCardTemplate);
-
 
 export default class Card extends AbstractComponent {
   constructor(event) {

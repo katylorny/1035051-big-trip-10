@@ -45,15 +45,9 @@ export const timeFormat = (date) => {
 export const timeDuration = (startTime, endTime) => {
   const a = moment(startTime);
   const b = moment(endTime);
-  // return moment.utc(moment.duration(endTime) - moment.duration(startTime)).format('HH:mm')
-  // return moment.duration(b.diff(a));
   const m = moment.duration(b - a);
 
   return m;
-  // console.log(11, m)
-  //  console.log(22, m.days())
-  //  console.log(22, m.hours())
-  // console.log(33, m.minutes())
 };
 
 export const formatDateTime = (date) => {
@@ -79,4 +73,12 @@ export const makeCheckedArray = (arr) => {
     }
   });
   return checkedArray;
+};
+
+export const reformatDate = (dateAsString) => {
+  const dateAsMoment = moment(dateAsString, `DD/MM/YYYY HH:mm`).format(`YYYY,MM,DD,HH,mm`);
+  const dateAsArray = dateAsMoment.split(`,`).map((it) => parseInt(it, 10));
+  dateAsArray[1] -= 1;
+
+  return new Date(...dateAsArray);
 };

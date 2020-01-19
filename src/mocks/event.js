@@ -33,22 +33,48 @@ export const generatePhotosArray = () => {
   return photos;
 };
 
-const citiesWithDescription = CITIES.map((city1) => {
-  return {
-    city: city1,
-    description: generateDescription(),
-    photos: generatePhotosArray(),
-  };
-});
+// const citiesWithDescription = CITIES.map((city) => {
+//   return {
+//     city,
+//     description: generateDescription(),
+//     photos: generatePhotosArray(),
+//   };
+// });
 
-export const OFFERS = [
-  {name: `Add luggage`, type: `luggage`, cost: 10},
-  {name: `Switch to comfort class`, type: `comfort`, cost: 150},
-  {name: `Add meal`, type: `meal`, cost: 2},
-  {name: `Choose seats`, type: `seats`, cost: 9},
+export const citiesWithDescription = [
+  {
+    city: `Kis`,
+    description: [`Кисловодск - это круто`],
+    photos: [`img/photos/kis1.JPG`, `img/photos/kis2.JPG`]
+  },
+  {
+    city: `Mos`,
+    description: [`Приезжайте в Москву`],
+    photos: [`img/photos/M1.JPG`, `img/photos/M2.JPG`, `img/photos/M3.JPG`, `img/photos/M4.JPG`]
+  }, {
+    city: `Or`,
+    description: [`Орел - хороший город`],
+    photos: [`img/photos/or1.JPG`, `img/photos/or2.JPG`]
+  }, {
+    city: `Tul`,
+    description: [`В Туле есть пряники`],
+    photos: [`img/photos/Tu1.JPG`]
+  }, {
+    city: `Vin`,
+    description: [`В Виннице у вас много друзей`],
+    photos: [`img/photos/Vin1.JPG`, `img/photos/Vin2.JPG`, `img/photos/Vin3.JPG`]
+  },
 ];
 
-const typesWithOffers = TYPES.map((nameOfType) => {
+
+export const OFFERS = [
+  {name: `Add luggage`, type: `luggage`, cost: 10, isChecked: true},
+  {name: `Switch to comfort class`, type: `comfort`, cost: 150, isChecked: true},
+  {name: `Add meal`, type: `meal`, cost: 2, isChecked: true},
+  {name: `Choose seats`, type: `seats`, cost: 9, isChecked: true},
+];
+
+export const typesWithOffers = TYPES.map((nameOfType) => {
   return {
     type: nameOfType,
     offers: getRandomArrayElements(OFFERS, 4),
@@ -63,9 +89,12 @@ const typesWithOffers = TYPES.map((nameOfType) => {
 const getRandomDate = () => {
   const targetDate = new Date();
   const sign = Math.random() > 0.5 ? 1 : -1;
-  const diffValue = sign * getRandomNumber(0, 7);
+  // const diffValue = sign * getRandomNumber(0, 7);
 
-  targetDate.setDate(targetDate.getDate() + diffValue);
+  // targetDate.setDate(targetDate.getDate() + diffValue);
+  targetDate.setDate(targetDate.getDate() + sign * getRandomNumber(0, 7));
+  targetDate.setHours(targetDate.getHours() + sign * getRandomNumber(0, 24));
+  targetDate.setMinutes(targetDate.getMinutes() + sign * getRandomNumber(0, 60));
 
   return targetDate;
 };
@@ -80,10 +109,13 @@ const getRandomNextDate = (date) => {
 export const generateEvent = () => {
   const randomDate = getRandomDate();
   const cityWithDescription = getRandomArrayElement(citiesWithDescription);
+  // console.log(`citiesWithDescription`, citiesWithDescription)
+  // console.log(`cityWithDescription`, cityWithDescription)
   const typeOfEvent = getRandomArrayElement(TYPES);
   const options = typesWithOffers.find((it) => it.type === typeOfEvent);
 
   return {
+    id: String(new Date() + Math.random()),
     type: typeOfEvent,
     city: cityWithDescription.city,
     photos: cityWithDescription.photos,
@@ -103,4 +135,5 @@ export const generateEvents = (count) => {
 };
 
 export const events = generateEvents(EVENTS_COUNT);
+
 
