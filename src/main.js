@@ -8,7 +8,6 @@ import FilterController from "./controllers/filter-controller";
 const tripControlsElement = document.querySelector(`.trip-main__trip-controls`);
 const tripControlsMenuElement = tripControlsElement.querySelector(`h2`);
 
-
 render(tripControlsMenuElement, new MenuComponent().getElement(), RENDER_POSITION.AFTEREND);
 
 const tripEvents = document.querySelector(`.trip-events`);
@@ -22,4 +21,5 @@ filterController.render();
 const tripController = new TripController(tripEvents, pointsModel);
 tripController.render(events);
 
+document.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, tripController.createNewPoint);
 

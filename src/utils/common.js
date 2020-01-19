@@ -77,7 +77,7 @@ export const makeCheckedArray = (arr) => {
 
 export const reformatDate = (dateAsString) => {
   const dateAsMoment = moment(dateAsString, `DD/MM/YYYY HH:mm`).format(`YYYY,MM,DD,HH,mm`);
-  const dateAsArray = dateAsMoment.split(',').map(it => parseInt(it));
+  const dateAsArray = dateAsMoment.split(`,`).map((it) => parseInt(it, 10));
   dateAsArray[1] -= 1;
 
   return new Date(...dateAsArray);

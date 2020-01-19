@@ -44,28 +44,27 @@ export const generatePhotosArray = () => {
 export const citiesWithDescription = [
   {
     city: `Kis`,
-    description: ['Кисловодск - это круто'],
-    photos: ["img/photos/kis1.JPG", "img/photos/kis2.JPG"]
+    description: [`Кисловодск - это круто`],
+    photos: [`img/photos/kis1.JPG`, `img/photos/kis2.JPG`]
   },
   {
     city: `Mos`,
-    description: ['Приезжайте в Москву'],
-    photos: ["img/photos/M1.JPG", "img/photos/M2.JPG", "img/photos/M3.JPG", "img/photos/M4.JPG"]
+    description: [`Приезжайте в Москву`],
+    photos: [`img/photos/M1.JPG`, `img/photos/M2.JPG`, `img/photos/M3.JPG`, `img/photos/M4.JPG`]
   }, {
     city: `Or`,
-    description: ['Орел - хороший город'],
-    photos: ["img/photos/or1.JPG", "img/photos/or2.JPG"]
+    description: [`Орел - хороший город`],
+    photos: [`img/photos/or1.JPG`, `img/photos/or2.JPG`]
   }, {
     city: `Tul`,
-    description: ['В Туле есть пряники'],
-    photos: ["img/photos/Tu1.JPG"]
+    description: [`В Туле есть пряники`],
+    photos: [`img/photos/Tu1.JPG`]
   }, {
     city: `Vin`,
-    description: ['В Виннице у вас много друзей'],
-    photos: ["img/photos/Vin1.JPG", "img/photos/Vin2.JPG", "img/photos/Vin3.JPG"]
+    description: [`В Виннице у вас много друзей`],
+    photos: [`img/photos/Vin1.JPG`, `img/photos/Vin2.JPG`, `img/photos/Vin3.JPG`]
   },
 ];
-
 
 
 export const OFFERS = [
