@@ -65,6 +65,14 @@ export default class TripController {
 
   }
 
+  hide() {
+    this._container.classList.add(`trip-events--hidden`);
+  }
+
+  show() {
+    this._container.classList.remove(`trip-events--hidden`);
+  }
+
   render() {
 
     this._events = this._model.getFilteredPoints().slice().sort((a, b) => a.startTime - b.startTime);
