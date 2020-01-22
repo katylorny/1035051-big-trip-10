@@ -3,3 +3,8 @@ export const FILTERS = {
   FUTURE: `Future`,
   PAST: `Past`
 };
+
+export const MENU_ITEMS = {
+  TABLE: `Table`,
+  STATS: `Stats`,
+};
