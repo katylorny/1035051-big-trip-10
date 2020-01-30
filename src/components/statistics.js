@@ -1,7 +1,7 @@
 import AbstractSmartComponent from "./abstract-smart-component";
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import {TYPES_MOVE} from "../mocks/event";
+import {TYPES_MOVE} from "../constants";
 import {timeDuration} from "../utils/common";
 
 const BAR_HEIGHT = 40;
@@ -16,15 +16,15 @@ const renderMoneyStatistic = (ctx, points) => {
     .map((type) => {
       return points.filter((point) => point.type === type) // массив поинтов нужного типа
         .map((point) => parseInt(point.price, 10)) // массив цен поинтов данного типа
-        .reduce((sum, price) => sum + price, 0) // цифра - сумма всех цен поинтов нужного типа
+        .reduce((sum, price) => sum + price, 0); // цифра - сумма всех цен поинтов нужного типа
     });
 
   const data = {
     labels: types,
     datasets: [{
-      label: 'Money',
+      label: `Money`,
       data: typesPrices,
-      backgroundColor: 'white',
+      backgroundColor: `white`,
       borderWidth: 0,
     }]
   };
@@ -37,18 +37,16 @@ const renderMoneyStatistic = (ctx, points) => {
     },
     title: {
       display: true,
-      text: 'MONEY',
-      position: 'left',
+      text: `MONEY`,
+      position: `left`,
     },
     plugins: {
       datalabels: {
         // color: '#36A2EB'
-        anchor: 'end',
-        align: 'right',
+        anchor: `end`,
+        align: `right`,
         clamp: true,
-        formatter: function (value) {
-          return '$ ' + value;
-        }
+        formatter: ((value) => `$ ` + value),
       }
     },
     layout: {
@@ -86,9 +84,9 @@ const renderMoneyStatistic = (ctx, points) => {
 
   return new Chart(ctx, {
     plugins: [ChartDataLabels],
-    type: 'horizontalBar',
-    data: data,
-    options: options,
+    type: `horizontalBar`,
+    data,
+    options,
   });
 };
 
@@ -98,7 +96,6 @@ const renderTransportStatistic = (ctx, points) => {
   const allTypesOfTransport = types.filter((type) => TYPES_MOVE.indexOf(type) !== -1);
   const typesOfTransportSet = Array.from(new Set(allTypesOfTransport));
 
-  console.log(`typesOfTransport`, allTypesOfTransport);
   const countsOfTypes = typesOfTransportSet.map((type) => {
     let count = 0;
     allTypesOfTransport.forEach((typeOfTransport) => {
@@ -106,7 +103,6 @@ const renderTransportStatistic = (ctx, points) => {
         count += 1;
       }
     });
-    console.log(count);
     return count;
   });
 
@@ -114,9 +110,9 @@ const renderTransportStatistic = (ctx, points) => {
   const data = {
     labels: typesOfTransportSet,
     datasets: [{
-      label: 'Transport',
+      label: `Transport`,
       data: countsOfTypes,
-      backgroundColor: 'white',
+      backgroundColor: `white`,
       borderWidth: 0,
     }]
   };
@@ -129,18 +125,16 @@ const renderTransportStatistic = (ctx, points) => {
     },
     title: {
       display: true,
-      text: 'TRANSPORT',
-      position: 'left',
+      text: `TRANSPORT`,
+      position: `left`,
     },
     plugins: {
       datalabels: {
         // color: '#36A2EB'
-        anchor: 'end',
-        align: 'right',
+        anchor: `end`,
+        align: `right`,
         clamp: true,
-        formatter: function (value) {
-          return value + 'x';
-        }
+        formatter: ((value) => value + `x`),
       }
     },
     layout: {
@@ -178,9 +172,9 @@ const renderTransportStatistic = (ctx, points) => {
 
   return new Chart(ctx, {
     plugins: [ChartDataLabels],
-    type: 'horizontalBar',
-    data: data,
-    options: options,
+    type: `horizontalBar`,
+    data,
+    options,
   });
 };
 
@@ -194,9 +188,9 @@ const renderTimeSpendStatistic = (ctx, points) => {
   const data = {
     labels: types,
     datasets: [{
-      label: 'Transport',
+      label: `Transport`,
       data: typesDuration,
-      backgroundColor: 'white',
+      backgroundColor: `white`,
       borderWidth: 0,
     }]
   };
@@ -209,18 +203,16 @@ const renderTimeSpendStatistic = (ctx, points) => {
     },
     title: {
       display: true,
-      text: 'TIME SPENT',
-      position: 'left',
+      text: `TIME SPENT`,
+      position: `left`,
     },
     plugins: {
       datalabels: {
         // color: '#36A2EB'
-        anchor: 'end',
-        align: 'right',
+        anchor: `end`,
+        align: `right`,
         clamp: true,
-        formatter: function (value) {
-          return value + 'H';
-        }
+        formatter: ((value) => (value + `H`)),
       }
     },
     layout: {
@@ -258,9 +250,9 @@ const renderTimeSpendStatistic = (ctx, points) => {
 
   return new Chart(ctx, {
     plugins: [ChartDataLabels],
-    type: 'horizontalBar',
-    data: data,
-    options: options,
+    type: `horizontalBar`,
+    data,
+    options,
   });
 };
 
@@ -282,7 +274,7 @@ const createStatisticsMarkup = () => {
             <canvas class="statistics__chart  statistics__chart--time" width="900"></canvas>
           </div>
         </section>`
-  )
+  );
 };
 
 export default class Statistics extends AbstractSmartComponent {

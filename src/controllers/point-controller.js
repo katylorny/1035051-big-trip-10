@@ -2,21 +2,26 @@ import CardComponent from "../components/create-card";
 import {render, RENDER_POSITION} from "../utils/render";
 import EditEventComponent from "../components/edit-event";
 import {replace, remove} from "../utils/render";
-import {typesWithOffers} from "../mocks/event";
+// import {typesWithOffers} from "../mocks/event";
 import {TRIP_MODE} from "./trip-controller";
+import {reformatDate} from "../utils/common";
+import PointModel from "../models/point-model";
 
-export const EmptyPoint = {
-  id: String(new Date() + Math.random()),
-  type: typesWithOffers[0].type,
-  city: ``,
-  photos: [],
-  description: ``,
-  price: ``,
-  startTime: new Date(),
-  endTime: new Date(),
-  options: typesWithOffers[0].offers,
-  isFavorite: false,
+const EmptyPoint = {
+  'type': `transport`,
+  'destination': {
+    'name': ``,
+    'description': ``,
+    'pictures': [],
+  },
+  "base_price": ``,
+  "date_from": new Date(),
+  "date_to": new Date(),
+  "offers": [],
+  "is_favorite": false,
 };
+
+export const EmptyPointModel = new PointModel(EmptyPoint);
 
 export const MODES = {
   DEFAULT: `default`,
@@ -24,12 +29,32 @@ export const MODES = {
   ADDING: `adding`,
 };
 
+
+const parseFormData = ({formData, offers, description, photos, id}) => {
+
+  return new PointModel({
+    'type': formData.get(`event-type`),
+    'destination': {
+      'name': formData.get(`event-destination`),
+      'description': description,
+      'pictures': photos,
+    },
+    "base_price": parseInt(formData.get(`event-price`), 10),
+    "date_from": reformatDate(formData.get(`event-start-time`)),
+    "date_to": reformatDate(formData.get(`event-end-time`)),
+    "offers": offers,
+    "is_favorite": formData.has(`event-favorite`),
+    'id': id,
+  });
+};
+
 export default class PointController {
-  constructor(container, onDataChange, onViewChange, tripMode = TRIP_MODE.DEFAULT) {
+  constructor(container, onDataChange, onViewChange, api, tripMode = TRIP_MODE.DEFAULT) {
     this._container = container;
     this._onDataChange = onDataChange;
     this._onViewChange = onViewChange;
     this._tripMode = tripMode;
+    this._api = api;
 
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
 
@@ -40,6 +65,7 @@ export default class PointController {
   }
 
   render(event, mode) {
+
     this._mode = mode;
     const oldEventComponent = this._eventComponent;
     const oldEventEditComponent = this._eventEditComponent;
@@ -58,23 +84,29 @@ export default class PointController {
       this._replaceEditToCard();
     });
 
+
     this._eventEditComponent.setSubmitFormHandler(() => {
-      this._onDataChange(this, event, this._eventEditComponent.getData());
+      const newData = parseFormData(this._eventEditComponent.getData());
+
+      this._onDataChange(this, event, newData);
 
       if (this._mode !== MODES.ADDING) {
         this._replaceEditToCard();
       }
-
+      document.querySelector(`.trip-main__event-add-btn`).removeAttribute(`disabled`);
     });
 
     this._eventEditComponent.setFavoriteButtonClickHandler(() => {
-      this._onDataChange(this, event, Object.assign({}, event, {
-        isFavorite: !event.isFavorite
-      }));
+
+      const newEvent = PointModel.clone(event);
+      newEvent.isFavorite = !event.isFavorite;
+      this._api.updatePoint(event.id, newEvent);
+
     });
 
     this._eventEditComponent.setDeleteButtonHandler(() => {
       this._onDataChange(this, event, null);
+      document.querySelector(`.trip-main__event-add-btn`).removeAttribute(`disabled`);
     });
 
     switch (this._mode) {
