@@ -28,7 +28,7 @@ export default class AbstractComponent {
 
   show() {
     if (this._element) {
-    this._element.classList.remove(HIDDEN_CLASS);
+      this._element.classList.remove(HIDDEN_CLASS);
     }
   }
 

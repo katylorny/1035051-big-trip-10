@@ -44,7 +44,7 @@ export default class Menu extends AbstractComponent {
 
   setMenuItemClickHandler(handler) {
     this.getElement().addEventListener(`click`, (evt) => {
-      if(evt.target.tagName !== `A` || evt.target.textContent === this._currentMenuItem) {
+      if (evt.target.tagName !== `A` || evt.target.textContent === this._currentMenuItem) {
         return;
       }
 

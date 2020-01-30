@@ -1,15 +1,15 @@
-import {TYPES_STAY} from "../mocks/event";
+import {TYPES_STAY} from "../constants";
 import {castTimeDateFormat, timeDuration} from "../utils/common";
 import AbstractComponent from "./abstract-component";
 import moment from 'moment';
 
 const createOffersTemplate = (array) => {
-  return array.map(({name, cost}) => {
+  return array.map(({title, price}) => {
     return (
       `<li class="event__offer">
-        <span class="event__offer-title">${name}</span>
+        <span class="event__offer-title">${title}</span>
         &plus;
-        &euro;&nbsp;<span class="event__offer-price">${cost}</span>
+        &euro;&nbsp;<span class="event__offer-price">${price}</span>
        </li>`
     );
   }).join(`\n`);
@@ -24,6 +24,7 @@ export const createCardTemplate = (cardObject) => {
   const minutes = duration.minutes();
 
   return (
+
     `<li class="trip-events__item">
                   <div class="event">
                     <div class="event__type">

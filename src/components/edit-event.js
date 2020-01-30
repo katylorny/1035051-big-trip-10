@@ -1,15 +1,12 @@
-import {CITIES} from "../mocks/event";
-import {TYPES_MOVE} from "../mocks/event";
-import {TYPES_STAY} from "../mocks/event";
+import {TYPES_MOVE, TYPES_STAY} from "../constants";
 import AbstractSmartComponent from "./abstract-smart-component";
 import flatpickr from 'flatpickr';
 import moment from 'moment';
-import {reformatDate} from "../utils/common";
-import {citiesWithDescription} from "../mocks/event";
-import {typesWithOffers} from "../mocks/event";
 import {MODES} from "../controllers/point-controller";
+import StorageModel from "../models/storage-model";
+import PointModel from "../models/point-model";
 
-const OPTION_NAME_PREFIX = `event-offer-`;
+// const OPTION_NAME_PREFIX = `event-offer-`;
 
 const createTypesTemplate = (arr, type) => {
   return (
@@ -26,7 +23,9 @@ const createTypesTemplate = (arr, type) => {
 
 const createOfferTemplate = (arr) => {
   return arr.map((offer) => {
-    const {name: offerName, type: offerType, cost: offerPrice, isChecked} = offer;
+
+    const {title: offerName, price: offerPrice, isChecked} = offer;
+    const offerType = offerName.toString().toLowerCase().split(` `).join(`-`);
     return (
       `<div class="event__offer-selector">
        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offerType}-1" type="checkbox" name="event-offer-${offerType}" ${isChecked ? `checked` : ``}>
@@ -40,14 +39,16 @@ const createOfferTemplate = (arr) => {
   }).join(`\n`);
 };
 
-const createCitiesListTemplate = CITIES.map((el) => {
-  return `<option value="${el}"></option>`;
-}).join(`\n`);
+const createCitiesListTemplate = (cities) => {
+  return cities.map((el) => {
+    return `<option value="${el}"></option>`;
+  }).join(`\n`);
+};
 
 const createPhotosTemplate = (array) => {
   return array.map((photo) => {
     return (
-      `<img class="event__photo" src="${photo}" alt="Event photo">`
+      `<img class="event__photo" src="${photo.src}" alt="${photo.description}">`
     );
   }).join(`\n`);
 };
@@ -55,7 +56,21 @@ const createPhotosTemplate = (array) => {
 const createEditEventTemplate = (event, additionalEvent, mode) => {
 
   const {isFavorite} = event;
-  const {type, city, photos, description, price, startTime, endTime, options} = additionalEvent;
+  const {type, city, description, photos, price, startTime, endTime, options} = additionalEvent;
+
+  const cities = StorageModel.getCities();
+
+  const allOptionsOfType = StorageModel.getOffersOfType(type);
+
+  allOptionsOfType.forEach((option) => {
+    const selectedOption = options.find((it) => it.title === option.title);
+    option[`isChecked`] = !!selectedOption;
+    if (selectedOption) {
+      option[`price`] = selectedOption.price;
+
+    }
+
+  });
 
   const isDisabledSaveButton = (!price || !city);
 
@@ -93,7 +108,7 @@ const createEditEventTemplate = (event, additionalEvent, mode) => {
                         </label>
                         <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}" list="destination-list-1" autocomplete="off">
                         <datalist id="destination-list-1">
-                          ${createCitiesListTemplate}
+                          ${createCitiesListTemplate(cities)}
                         </datalist>
                       </div>
 
@@ -135,13 +150,13 @@ const createEditEventTemplate = (event, additionalEvent, mode) => {
                     </header>
 
                     ${city ? `<section class="event__details">
-                                <section class="event__section  event__section--offers">
+                                ${allOptionsOfType.length > 0 ? `<section class="event__section  event__section--offers">
                                   <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
                                   <div class="event__available-offers">
-                                    ${createOfferTemplate(options)}
+                                    ${createOfferTemplate(allOptionsOfType)}
                                   </div>
-                                </section>
+                                </section>` : ``}
 
                                 <section class="event__section  event__section--destination">
                                   <h3 class="event__section-title  event__section-title--destination">Destination</h3>
@@ -164,7 +179,7 @@ export default class EditEvent extends AbstractSmartComponent {
     super();
     this._event = event;
     this._mode = mode;
-    this._additionalEvent = Object.assign({}, this._event);
+    this._additionalEvent = PointModel.clone(this._event);
 
     this._flatpickr = null;
     this._applyFlatpickr();
@@ -214,16 +229,15 @@ export default class EditEvent extends AbstractSmartComponent {
       handler();
     });
     this._submitHandler = handler;
+
   }
 
   setDeleteButtonHandler(handler) {
     this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, handler);
     this._deleteButtonHandler = handler;
-    // console.log("edit event  setDeleteButtonHandler handler",handler)
   }
 
   setFavoriteButtonClickHandler(handler) {
-
     this.getElement().querySelector(`.event__favorite-icon`).addEventListener(`click`, handler);
   }
 
@@ -240,49 +254,58 @@ export default class EditEvent extends AbstractSmartComponent {
     const form = this.getElement();
     const formData = new FormData(form);
 
-    return this._parseFormData(formData);
-  }
-
-  _parseFormData(formData) {
-
-    const offers = Array.from(this.getElement().querySelectorAll(`.event__offer-selector`)).map((el) => {
-      return {
-        name: el.querySelector(`.event__offer-title`).textContent,
-        type: el.querySelector(`.event__offer-checkbox`).name.substring(OPTION_NAME_PREFIX.length),
-        cost: el.querySelector(`.event__offer-price`).textContent,
-        isChecked: el.querySelector(`.event__offer-checkbox`).checked
-      };
-    });
-
+    const offers = Array.from(form.querySelectorAll(`.event__offer-selector`))
+      .filter((it) => it.querySelector(`.event__offer-checkbox`).checked)
+      .map((el) => {
+        return {
+          title: el.querySelector(`.event__offer-title`).textContent,
+          // type: el.querySelector(`.event__offer-checkbox`).name.substring(OPTION_NAME_PREFIX.length),
+          price: +el.querySelector(`.event__offer-price`).textContent,
+          // isChecked: el.querySelector(`.event__offer-checkbox`).checked
+        };
+      });
 
     return {
-      // id: String(new Date() + Math.random()),
-      type: formData.get(`event-type`),
-      city: formData.get(`event-destination`),
-      description: this.getElement().querySelector(`.event__destination-description`).textContent,
-      photos: Array.from(this.getElement().querySelectorAll(`.event__photo`)).map((photo) => photo.src),
-      price: parseInt(formData.get(`event-price`), 10),
-      startTime: reformatDate(formData.get(`event-start-time`)),
-      endTime: reformatDate(formData.get(`event-end-time`)),
-      options: offers,
-      isFavorite: formData.has(`event-favorite`),
+      formData,
+      offers,
+      description: form.querySelector(`.event__destination-description`).textContent,
+      photos: Array.from(form.querySelectorAll(`.event__photo`)).map((photo) => {
+        return {
+          'src': photo.src,
+          'description': photo.alt,
+        };
+      }),
+      id: this._event.id,
     };
+
+  }
+
+
+  _checkFormForSubmit() {
+    const destination = this.getElement().querySelector(`.event__input--destination`).value;
+    const startTime = this.getElement().querySelector(`#event-start-time-1`).value;
+    const endTime = this.getElement().querySelector(`#event-end-time-1`).value;
+    const price = this.getElement().querySelector(`.event__input--price`).value;
+
+    const saveButton = this.getElement().querySelector(`.event__save-btn`);
+
+    if (!destination || !startTime || !endTime || !price || startTime > endTime) {
+      saveButton.setAttribute(`disabled`, `true`);
+    } else {
+      saveButton.removeAttribute(`disabled`);
+    }
+
   }
 
   _subscribeOnEvents() {
     const element = this.getElement();
 
     element.querySelector(`.event__type-list`).addEventListener(`click`, (evt) => {
-      // console.log(`evt.target.textContent`, evt.target.textContent);
-      if (evt.target.tagName === `LABEL`) {
-        this._additionalEvent = Object.assign({}, this._additionalEvent, {
-          type: evt.target.textContent,
-        });
 
-        const index = typesWithOffers.findIndex((el) => el.type === evt.target.textContent);
-        this._additionalEvent = Object.assign({}, this._additionalEvent, {
-          options: typesWithOffers[index].offers,
-        });
+      if (evt.target.tagName === `LABEL`) {
+
+        this._additionalEvent.type = evt.target.textContent;
+        this._additionalEvent.options = [];
         this.rerender();
       }
     });
@@ -293,31 +316,43 @@ export default class EditEvent extends AbstractSmartComponent {
     });
 
     destinationInput.addEventListener(`change`, (evt) => {
-      const selectedCityIndex = citiesWithDescription.findIndex((city) => city.city === evt.target.value);
 
-      if (selectedCityIndex === -1) {
+      const selectedCity = StorageModel.getCities().find((city) => city === evt.target.value);
+
+      if (!selectedCity) {
         this.rerender();
         return;
       }
+      this._additionalEvent.city = StorageModel.getDestination(selectedCity).name;
+      this._additionalEvent.description = StorageModel.getDestination(selectedCity).description;
+      this._additionalEvent.photos = StorageModel.getDestination(selectedCity).pictures;
 
-      const selectedCity = citiesWithDescription[selectedCityIndex];
-
-      this._additionalEvent = Object.assign({}, this._additionalEvent, {
-        city: selectedCity.city,
-        description: selectedCity.description,
-        photos: selectedCity.photos,
-      });
       this.rerender();
     });
 
     const priceInput = element.querySelector(`.event__input--price`);
     priceInput.addEventListener(`change`, () => {
-      this._additionalEvent = Object.assign({}, this._additionalEvent, {
-        price: priceInput.value,
-      });
-      this.rerender();
+      this._additionalEvent.price = priceInput.value;
+      this._checkFormForSubmit();
     });
 
+
+    const offers = Array.from(element.querySelectorAll(`.event__offer-selector`));
+    offers.forEach((offer) => {
+      offer.addEventListener(`change`, (evt) => {
+        if (evt.target.checked) {
+          this._additionalEvent.options.push({
+            title: offer.querySelector(`.event__offer-title`).textContent,
+            price: offer.querySelector(`.event__offer-price`).textContent,
+          });
+        } else {
+
+          const index = this._additionalEvent.options.findIndex((option) => option.title === offer.querySelector(`.event__offer-title`).textContent);
+          this._additionalEvent.options = [].concat(this._additionalEvent.options.slice(0, index), this._additionalEvent.options.slice(index + 1));
+
+        }
+      });
+    });
   }
 
   _applyFlatpickr() {
