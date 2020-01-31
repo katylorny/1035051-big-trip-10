@@ -122,7 +122,6 @@ export default class TripController {
       this._addingPointController.render(EmptyPointModel, MODES.ADDING);
     } else {
       this._addingPointController = new PointController(this._sortComponent.getElement(), this._onDataChange, this._onViewChange, this._api);
-      // console.log(`this._addingPointController`, new PointModel(EmptyPoint))
       this._addingPointController.render(EmptyPointModel, MODES.ADDING);
     }
 
@@ -236,6 +235,9 @@ export default class TripController {
             this._model.addPoint(pointModel);
             this._updatePoints();
             this._onSortTypeChange(this._activeSortType);
+          })
+          .catch(() => {
+            pointController.shake();
           });
       }
     } else if (newData === null) {
@@ -244,6 +246,9 @@ export default class TripController {
         .then(() => {
           this._model.removePoint(oldData.id);
           this._updatePoints();
+        })
+        .catch(() => {
+          pointController.shake();
         });
 
     } else {
@@ -255,6 +260,9 @@ export default class TripController {
             // pointController.render(newData, MODES.DEFAULT);
             this._updatePoints();
           }
+        })
+        .catch(() => {
+          pointController.shake();
         });
     }
 
