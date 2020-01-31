@@ -86,12 +86,9 @@ export default class TripController {
       render(this._container, this._noPoints);
       this._activeTripMode = TRIP_MODE.ADDING_FIRST_POINT;
     } else {
-      // this._events = getSortedPoints(this._events, SORT_TYPES.EVENT);
-
       this._activeTripMode = TRIP_MODE.DEFAULT;
       render(this._container, this._sortComponent.getElement());
       render(this._tripInfoElement, this._tripComponent, RENDER_POSITION.AFTERBEGIN);
-      // render(this._container, this._cardsList);
 
       this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
 
@@ -100,10 +97,7 @@ export default class TripController {
       } else {
         this._renderWithoutDays(this._events);
       }
-
-
       calculatePrice(this._events);
-
     }
   }
 
@@ -257,7 +251,6 @@ export default class TripController {
           const isSuccess = this._model.updatePointsData(oldData.id, pointModel);
 
           if (isSuccess) {
-            // pointController.render(newData, MODES.DEFAULT);
             this._updatePoints();
           }
         })

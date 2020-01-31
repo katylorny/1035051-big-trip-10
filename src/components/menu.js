@@ -51,7 +51,7 @@ export default class Menu extends AbstractComponent {
       this._currentMenuItem = MENU_ITEMS[evt.target.textContent.toUpperCase()];
 
       // evt.target.classList.
-      handler(this._currentMenuItem); // Todo
+      handler(this._currentMenuItem);
 
       this._setActiveItem(evt.target);
     });

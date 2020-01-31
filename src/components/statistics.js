@@ -208,7 +208,6 @@ const renderTimeSpendStatistic = (ctx, points) => {
     },
     plugins: {
       datalabels: {
-        // color: '#36A2EB'
         anchor: `end`,
         align: `right`,
         clamp: true,
@@ -230,7 +229,6 @@ const renderTimeSpendStatistic = (ctx, points) => {
 
       yAxes: [{
         barThickness: 40,
-        // barPercentage: 0.95,
         gridLines: {
           display: false
         },
