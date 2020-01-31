@@ -2,7 +2,6 @@ import CardComponent from "../components/create-card";
 import {render, RENDER_POSITION} from "../utils/render";
 import EditEventComponent from "../components/edit-event";
 import {replace, remove} from "../utils/render";
-// import {typesWithOffers} from "../mocks/event";
 import {TRIP_MODE} from "./trip-controller";
 import {reformatDate} from "../utils/common";
 import PointModel from "../models/point-model";
@@ -169,7 +168,7 @@ export default class PointController {
   destroyPoint() {
     remove(this._eventComponent);
     remove(this._eventEditComponent);
-    document.removeEventListener(`keydown`, this._onEscKeyDown); // TODO: мб можно без этого
+    document.removeEventListener(`keydown`, this._onEscKeyDown);
   }
 
   _blockForm(isToBeBlocked) {

@@ -60,7 +60,7 @@ const createEditEventTemplate = (event, additionalEvent, mode) => {
   const {type, city, description, photos, price, startTime, endTime, options} = additionalEvent;
 
   const cityEncode = he.encode(city);
-  // const priceEncode = he.encode(price);
+
   const cities = StorageModel.getCities();
 
   const allOptionsOfType = StorageModel.getOffersOfType(type);
@@ -238,7 +238,7 @@ export default class EditEvent extends AbstractSmartComponent {
 
   setSubmitFormHandler(handler) {
     this.getElement().addEventListener(`submit`, (evt) => {
-      evt.preventDefault(); // TODO чтобы не отправлялось по нажатию enter
+      evt.preventDefault();
       handler();
     });
     this._submitHandler = handler;

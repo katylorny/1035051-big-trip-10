@@ -41,7 +41,7 @@ export default class FilterController {
     this._model.setFilterType(filterType);
     this.render();
 
-    this._model._filterHandlers.forEach((handler) => handler()); // TODO
+    this._model._filterHandlers.forEach((handler) => handler());
   }
 
   _onDataChange() {
