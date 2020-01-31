@@ -7,6 +7,7 @@ import {TRIP_MODE} from "./trip-controller";
 import {reformatDate} from "../utils/common";
 import PointModel from "../models/point-model";
 
+const SHAKE_ANIMATION_TIMEOUT = 600;
 const EmptyPoint = {
   'type': `transport`,
   'destination': {
@@ -19,6 +20,17 @@ const EmptyPoint = {
   "date_to": new Date(),
   "offers": [],
   "is_favorite": false,
+};
+
+
+const BUTTONS_LOAD_TEXT = {
+  deleteButtonText: `Deleting...`,
+  saveButtonText: `Saving...`,
+};
+
+const BUTTONS_DEFAULT_TEXT = {
+  deleteButtonText: `Delete`,
+  saveButtonText: `Save`,
 };
 
 export const EmptyPointModel = new PointModel(EmptyPoint);
@@ -86,13 +98,11 @@ export default class PointController {
 
 
     this._eventEditComponent.setSubmitFormHandler(() => {
+
+      this._setSaveButtonText(BUTTONS_LOAD_TEXT.saveButtonText);
       const newData = parseFormData(this._eventEditComponent.getData());
-
+      this._blockForm(true);
       this._onDataChange(this, event, newData);
-
-      if (this._mode !== MODES.ADDING) {
-        this._replaceEditToCard();
-      }
       document.querySelector(`.trip-main__event-add-btn`).removeAttribute(`disabled`);
     });
 
@@ -105,6 +115,8 @@ export default class PointController {
     });
 
     this._eventEditComponent.setDeleteButtonHandler(() => {
+      this._blockForm(true);
+      this._setDeleteButtonText(BUTTONS_LOAD_TEXT.deleteButtonText);
       this._onDataChange(this, event, null);
       document.querySelector(`.trip-main__event-add-btn`).removeAttribute(`disabled`);
     });
@@ -135,16 +147,48 @@ export default class PointController {
     }
   }
 
+  shake() {
+    this._eventEditComponent.showError(true, SHAKE_ANIMATION_TIMEOUT);
+    setTimeout(() => {
+      this._eventEditComponent.showError(false);
+
+      this._blockForm(false);
+
+      this._setSaveButtonText(BUTTONS_DEFAULT_TEXT.saveButtonText);
+      this._setDeleteButtonText(BUTTONS_DEFAULT_TEXT.deleteButtonText);
+    }, SHAKE_ANIMATION_TIMEOUT);
+  }
+
   setDefaultView() {
     if (this._mode === MODES.EDIT) {
       this._replaceEditToCard();
     }
   }
 
+
   destroyPoint() {
     remove(this._eventComponent);
     remove(this._eventEditComponent);
     document.removeEventListener(`keydown`, this._onEscKeyDown); // TODO: мб можно без этого
+  }
+
+  _blockForm(isToBeBlocked) {
+    const allFields = this._eventEditComponent.getElement().querySelectorAll(`form input, form button`);
+    if (isToBeBlocked) {
+      allFields.forEach((elem) => elem.setAttribute(`disabled`, `disabled`));
+    } else {
+      allFields.forEach((elem) => elem.removeAttribute(`disabled`));
+    }
+  }
+
+  _setDeleteButtonText(text) {
+    const deleteButton = this._eventEditComponent.getElement().querySelector(`.event__reset-btn`);
+    deleteButton.textContent = text;
+  }
+
+  _setSaveButtonText(text) {
+    const saveButton = this._eventEditComponent.getElement().querySelector(`.event__save-btn`);
+    saveButton.textContent = text;
   }
 
   _onEscKeyDown(evt) {

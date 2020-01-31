@@ -5,6 +5,7 @@ import moment from 'moment';
 import {MODES} from "../controllers/point-controller";
 import StorageModel from "../models/storage-model";
 import PointModel from "../models/point-model";
+import he from 'he';
 
 // const OPTION_NAME_PREFIX = `event-offer-`;
 
@@ -58,6 +59,8 @@ const createEditEventTemplate = (event, additionalEvent, mode) => {
   const {isFavorite} = event;
   const {type, city, description, photos, price, startTime, endTime, options} = additionalEvent;
 
+  const cityEncode = he.encode(city);
+  // const priceEncode = he.encode(price);
   const cities = StorageModel.getCities();
 
   const allOptionsOfType = StorageModel.getOffersOfType(type);
@@ -106,7 +109,7 @@ const createEditEventTemplate = (event, additionalEvent, mode) => {
                         <label class="event__label  event__type-output" for="event-destination-1">
                           ${type} ${TYPES_STAY.includes(type) ? `in` : `to`}
                         </label>
-                        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}" list="destination-list-1" autocomplete="off">
+                        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${cityEncode}" list="destination-list-1" autocomplete="off">
                         <datalist id="destination-list-1">
                           ${createCitiesListTemplate(cities)}
                         </datalist>
@@ -129,7 +132,7 @@ const createEditEventTemplate = (event, additionalEvent, mode) => {
                           <span class="visually-hidden">Price</span>
                           &euro;
                         </label>
-                        <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
+                        <input type="number" class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}" >
                       </div>
                       <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabledSaveButton ? `disabled` : ``}>Save</button>
                       <button class="event__reset-btn" type="reset">Delete</button>
@@ -216,6 +219,16 @@ export default class EditEvent extends AbstractSmartComponent {
     this.rerender();
   }
 
+  showError(isError, timeout) {
+    if (isError) {
+      this.getElement().style.animation = `shake ${timeout / 1000}s`;
+      this.getElement().style.boxShadow = `inset 0 0 30px rgba(220, 20, 60, 0.2)`;
+    } else {
+      this.getElement().style.animation = ``;
+      this.getElement().style.boxShadow = ``;
+    }
+  }
+
   setRollupButtonClickHandler(handler) {
     if (this._mode !== MODES.ADDING) {
       this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, handler);
@@ -289,7 +302,7 @@ export default class EditEvent extends AbstractSmartComponent {
 
     const saveButton = this.getElement().querySelector(`.event__save-btn`);
 
-    if (!destination || !startTime || !endTime || !price || startTime > endTime) {
+    if (!destination || !startTime || !endTime || !price || startTime > endTime || price <= 0) {
       saveButton.setAttribute(`disabled`, `true`);
     } else {
       saveButton.removeAttribute(`disabled`);
