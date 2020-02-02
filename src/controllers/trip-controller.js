@@ -119,11 +119,27 @@ export default class TripController {
       this._addingPointController.render(EmptyPointModel, MODES.ADDING);
     }
 
+    const onEscKeyDown = (evt) => {
+      const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
+      if (isEscKey) {
+        this._addingPointController = null;
+        this._updatePoints();
+        newPointButton.removeAttribute(`disabled`);
+        document.removeEventListener(`keydown`, onEscKeyDown);
+      }
+    };
+
+    document.addEventListener(`keydown`, onEscKeyDown);
   }
+
 
   removePoints() {
     this._controllers.forEach((controller) => controller.destroyPoint());
     this._controllers = [];
+  }
+
+  _onEscKeyDown() {
+
   }
 
   _renderWithDays() {

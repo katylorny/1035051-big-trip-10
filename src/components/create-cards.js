@@ -7,7 +7,6 @@ export const createCardsTemplate = () => { // <ul class="trip-days"> trip-events
   );
 };
 
-// import {DESCRIPTION_ARRAY} from "../mocks/event";
 
 export default class Cards extends AbstractComponent {
 

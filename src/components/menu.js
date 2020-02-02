@@ -1,16 +1,5 @@
-// import {generateMenuItems} from "../mocks/menu";
-
 import AbstractComponent from "./abstract-component";
 import {MENU_ITEMS} from "../constants";
-// import {createFilterTemplate} from "./filter";
-// import {generateFilters} from "../mocks/filter";
-
-// export const MenuItem = {
-//   TABLE: `control__task`,
-//   STATISTICS: `control__statistic`,
-// };
-
-// const generateMenuMarkup = generateMenuItems()
 
 const ACTIVE_MENU_ITEM_CLASS = `trip-tabs__btn--active`;
 
@@ -50,7 +39,6 @@ export default class Menu extends AbstractComponent {
 
       this._currentMenuItem = MENU_ITEMS[evt.target.textContent.toUpperCase()];
 
-      // evt.target.classList.
       handler(this._currentMenuItem);
 
       this._setActiveItem(evt.target);

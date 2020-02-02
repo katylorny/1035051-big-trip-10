@@ -14,7 +14,8 @@ const createTypesTemplate = (arr, type) => {
     arr.map((typeOfEvent) => {
       return (
         `<div class="event__type-item">
-          <input id="event-type-${typeOfEvent}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${typeOfEvent}" ${typeOfEvent === type ? `checked` : ``}>
+          <input id="event-type-${typeOfEvent}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" 
+                 value="${typeOfEvent}" ${typeOfEvent === type ? `checked` : ``}>
           <label class="event__type-label  event__type-label--${typeOfEvent}" for="event-type-${typeOfEvent}-1">${typeOfEvent}</label>
          </div>`
       );
@@ -29,7 +30,8 @@ const createOfferTemplate = (arr) => {
     const offerType = offerName.toString().toLowerCase().split(` `).join(`-`);
     return (
       `<div class="event__offer-selector">
-       <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offerType}-1" type="checkbox" name="event-offer-${offerType}" ${isChecked ? `checked` : ``}>
+       <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offerType}-1" 
+              type="checkbox" name="event-offer-${offerType}" ${isChecked ? `checked` : ``}>
        <label class="event__offer-label" for="event-offer-${offerType}-1">
          <span class="event__offer-title">${offerName}</span>
          &plus;
@@ -109,7 +111,8 @@ const createEditEventTemplate = (event, additionalEvent, mode) => {
                         <label class="event__label  event__type-output" for="event-destination-1">
                           ${type} ${TYPES_STAY.includes(type) ? `in` : `to`}
                         </label>
-                        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${cityEncode}" list="destination-list-1" autocomplete="off">
+                        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" 
+                              value="${cityEncode}" list="destination-list-1" autocomplete="off">
                         <datalist id="destination-list-1">
                           ${createCitiesListTemplate(cities)}
                         </datalist>
@@ -119,12 +122,14 @@ const createEditEventTemplate = (event, additionalEvent, mode) => {
                         <label class="visually-hidden" for="event-start-time-1">
                           From
                         </label>
-                        <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${moment(startTime).format(`DD/MM/YYYY HH:mm`)}">
+                        <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" 
+                                value="${moment(startTime).format(`DD/MM/YYYY HH:mm`)}">
                         &mdash;
                         <label class="visually-hidden" for="event-end-time-1">
                           To
                         </label>
-                        <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${moment(endTime).format(`DD/MM/YYYY HH:mm`)}">
+                        <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" 
+                               value="${moment(endTime).format(`DD/MM/YYYY HH:mm`)}">
                       </div>
 
                       <div class="event__field-group  event__field-group--price">
@@ -137,7 +142,8 @@ const createEditEventTemplate = (event, additionalEvent, mode) => {
                       <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabledSaveButton ? `disabled` : ``}>Save</button>
                       <button class="event__reset-btn" type="reset">Delete</button>
 
-                      <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${isFavorite ? `checked` : ``}>
+                      <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" 
+                             name="event-favorite" ${isFavorite ? `checked` : ``}>
                       <label class="event__favorite-btn" for="event-favorite-1">
                         <span class="visually-hidden">Add to favorite</span>
                         <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
@@ -313,6 +319,15 @@ export default class EditEvent extends AbstractSmartComponent {
   _subscribeOnEvents() {
     const element = this.getElement();
 
+
+//     element.querySelector(`#event-end-time-1`).addEventListener(`click`, (evt) => {  ///////////////////////////////////////////
+//       const startDate = element.querySelector(`#event-start-time-1`);
+//       console.log(evt.target.value)
+// flatpickr(evt.target.value, {minDate: evt.value})
+//       }
+//     );
+
+
     element.querySelector(`.event__type-list`).addEventListener(`click`, (evt) => {
 
       if (evt.target.tagName === `LABEL`) {
@@ -375,17 +390,26 @@ export default class EditEvent extends AbstractSmartComponent {
     }
 
     const startDate = this.getElement().querySelector(`#event-start-time-1`);
-    flatpickr(startDate, {
-      // altInput: true,
-      // allowInput: true,
+    let startPickr = flatpickr(startDate, {
       enableTime: true,
       dateFormat: `d/m/Y H:i`,
+      onClose: function (selectedDates, dateStr) {
+        endPickr.set('minDate', dateStr);
+        endPickr.jumpToDate(selectedDates[0]);
+      },
+      onChange: function () {
+        startPickr.close();
+        endPickr.open();
+      }
     });
 
     const endDate = this.getElement().querySelector(`#event-end-time-1`);
-    flatpickr(endDate, {
+    let endPickr = flatpickr(endDate, {
       enableTime: true,
       dateFormat: `d/m/Y H:i`,
+      onChange: function () {
+        endPickr.close();
+      }
     });
   }
 }
