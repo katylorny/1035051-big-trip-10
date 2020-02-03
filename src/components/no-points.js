@@ -1,6 +1,5 @@
 
 import AbstractComponent from "./abstract-component";
-// import {createCardTemplate} from "./create-card";
 
 const createNoPointsTemplate = () => {
   return (

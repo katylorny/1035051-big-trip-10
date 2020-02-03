@@ -38,7 +38,8 @@ export const createCardTemplate = (cardObject) => {
                         &mdash;
                         <time class="event__end-time" datetime="${endTime}">${moment(endTime).format(`HH:mm`)}</time>
                       </p>
-                      <p class="event__duration">${days === 0 ? `` : `${castTimeDateFormat(days)}D`} ${days + hours === 0 ? `` : `${castTimeDateFormat(hours)}H`} ${castTimeDateFormat(minutes)}M </p> 
+                      <p class="event__duration">${days === 0 ? `` : `${castTimeDateFormat(days)}D`} 
+                         ${days + hours === 0 ? `` : `${castTimeDateFormat(hours)}H`} ${castTimeDateFormat(minutes)}M </p> 
                     </div>
 
                     <p class="event__price">

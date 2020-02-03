@@ -182,7 +182,7 @@ const renderTimeSpendStatistic = (ctx, points) => {
   const types = points.map((point) => `${point.type}: ${point.city}`);
 
   const typesDuration = points.map((point) => {
-    return timeDuration(point.startTime, point.endTime).hours();
+    return timeDuration(point.startTime, point.endTime).asHours();
   });
 
   const data = {

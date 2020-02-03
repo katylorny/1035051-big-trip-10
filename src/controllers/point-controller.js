@@ -107,10 +107,9 @@ export default class PointController {
 
     this._eventEditComponent.setFavoriteButtonClickHandler(() => {
 
-      const newEvent = PointModel.clone(event);
-      newEvent.isFavorite = !event.isFavorite;
-      this._api.updatePoint(event.id, newEvent);
+      event.isFavorite = !event.isFavorite;
 
+      this._api.updatePoint(event.id, event);
     });
 
     this._eventEditComponent.setDeleteButtonHandler(() => {
