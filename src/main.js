@@ -7,9 +7,28 @@ import StatisticsComponent from "./components/statistics";
 import {MENU_ITEMS} from "./constants";
 import API from "./api/api";
 import Loading from "./components/loading";
+import Store from './api/store.js';
+import Provider from './api/provider.js';
+import 'flatpickr/dist/flatpickr.css';
+
+
+const STORE_PREFIX = `big-trip-localstorage`;
+const STORE_VER = `v1`;
+const STORE_NAME = `${STORE_PREFIX}-${STORE_VER}`;
 
 const END_POINT = `https://htmlacademy-es-10.appspot.com/big-trip`;
 const AUTHORIZATION = `Basic er883jdzbdw345353456`;
+
+window.addEventListener(`load`, () => {
+  navigator.serviceWorker.register(`/sw.js`)
+    .then(() => {
+
+    })
+    .catch(() => {
+
+    });
+
+});
 
 const tripEvents = document.querySelector(`.trip-events`);
 const loadingComponent = new Loading();
@@ -18,13 +37,38 @@ render(tripEvents, loadingComponent.getElement());
 
 const api = new API(END_POINT, AUTHORIZATION);
 
+const store = new Store(STORE_NAME, window.localStorage);
+
+const destinationsStore = new Store(`big-trip-destinations-v1`, window.localStorage);
+const offersTypesStore = new Store(`big-trip-offers-types-v1`, window.localStorage);
+
+
+const apiWithProvider = new Provider(api, store, destinationsStore, offersTypesStore);
+
 const pointsModel = new PointsModel();
 
 
+window.addEventListener(`online`, () => {
+  document.title = document.title.replace(` [offline]`, ``);
+
+  if (!apiWithProvider.getSynchronize()) {
+    apiWithProvider.sync()
+      .then(() => {
+      })
+      .catch(() => {
+      });
+  }
+});
+
+window.addEventListener(`offline`, () => {
+  document.title += ` [offline]`;
+});
+
+
 Promise.all([
-  api.getPoints(),
-  api.getDestinations(),
-  api.getOffersTypes(),
+  apiWithProvider.getPoints(),
+  apiWithProvider.getDestinations(),
+  apiWithProvider.getOffersTypes(),
 ])
   .then((results) => {
     pointsModel.setPoints(results[0]);
@@ -39,7 +83,7 @@ Promise.all([
     const menu = new MenuComponent();
     render(tripControlsMenuElement, menu.getElement(), RENDER_POSITION.AFTEREND);
 
-    const tripController = new TripController(tripEvents, pointsModel, api);
+    const tripController = new TripController(tripEvents, pointsModel, apiWithProvider);
 
     tripController.render();
 

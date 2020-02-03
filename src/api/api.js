@@ -78,6 +78,16 @@ export default class API {
     });
   }
 
+  sync(data) {
+    return this._load({
+      url: `points/sync`,
+      method: METHOD.POST,
+      body: JSON.stringify(data),
+      headers: new Headers({'Content-Type': `application/json`})
+    })
+      .then((response) => response.json());
+  }
+
   _load({url, method = METHOD.GET, body = null, headers = new Headers()}) {
     headers.append(`Authorization`, this._authorization);
 
