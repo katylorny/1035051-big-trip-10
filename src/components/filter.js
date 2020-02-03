@@ -3,7 +3,7 @@ import AbstractComponent from "./abstract-component";
 const generateFilterMarkup = (filters) => {
   return (
     filters.map((el) => {
-      let {title, isChecked} = el;
+      const {title, isChecked} = el;
       return (
         `<div class="trip-filters__filter">
        <input id="filter-everything" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="everything" ${isChecked ? `checked` : ``}>

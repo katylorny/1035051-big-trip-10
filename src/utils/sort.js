@@ -1,16 +1,16 @@
-import {SORT_TYPES} from "../components/sort";
+import {SortType} from "../components/sort";
 
 export const getSortedPoints = (points, sortType) => {
   let sortedPoints = [];
 
   switch (sortType) {
-    case SORT_TYPES.EVENT:
+    case SortType.EVENT:
       sortedPoints = points.slice().sort((a, b) => a.startTime - b.startTime);
       break;
-    case SORT_TYPES.PRICE:
+    case SortType.PRICE:
       sortedPoints = points.slice().sort((a, b) => b.price - a.price);
       break;
-    case SORT_TYPES.TIME:
+    case SortType.TIME:
       sortedPoints = points.slice().sort((a, b) => {
         return (b.endTime - b.startTime) - (a.endTime - a.startTime);
       });

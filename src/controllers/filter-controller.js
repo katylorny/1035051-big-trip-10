@@ -1,5 +1,5 @@
 import FilterComponent from "../components/filter";
-import {FILTERS} from "../constants";
+import {Filter} from "../constants";
 import {render, replace} from "../utils/render";
 
 export default class FilterController {
@@ -7,7 +7,7 @@ export default class FilterController {
     this._container = container;
     this._model = model;
 
-    this._activeFilterType = FILTERS.EVERYTHING;
+    this._activeFilterType = Filter.EVERYTHING;
     this._onFilterChange = this._onFilterChange.bind(this);
     this._onDataChange = this._onDataChange.bind(this);
     this._model.getFunctionFromFilterController(this._onDataChange);
@@ -18,7 +18,7 @@ export default class FilterController {
 
   render() {
     const container = this._container;
-    const filters = Object.values(FILTERS).map((filterType) => {
+    const filters = Object.values(Filter).map((filterType) => {
       return {
         title: filterType,
         isChecked: filterType === this._activeFilterType,
@@ -41,7 +41,7 @@ export default class FilterController {
     this._model.setFilterType(filterType);
     this.render();
 
-    this._model._filterHandlers.forEach((handler) => handler());
+    // this._model._filterHandlers.forEach((handler) => handler()); // TODO
   }
 
   _onDataChange() {

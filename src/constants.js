@@ -1,10 +1,10 @@
-export const FILTERS = {
+export const Filter = {
   EVERYTHING: `Everything`,
   FUTURE: `Future`,
   PAST: `Past`
 };
 
-export const MENU_ITEMS = {
+export const MenuItem = {
   TABLE: `Table`,
   STATS: `Stats`,
 };

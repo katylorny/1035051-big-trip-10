@@ -42,7 +42,6 @@ const renderMoneyStatistic = (ctx, points) => {
     },
     plugins: {
       datalabels: {
-        // color: '#36A2EB'
         anchor: `end`,
         align: `right`,
         clamp: true,
@@ -76,7 +75,6 @@ const renderMoneyStatistic = (ctx, points) => {
         },
         ticks: {
           display: false
-          // beginAtZero: true
         }
       }]
     }
@@ -130,7 +128,6 @@ const renderTransportStatistic = (ctx, points) => {
     },
     plugins: {
       datalabels: {
-        // color: '#36A2EB'
         anchor: `end`,
         align: `right`,
         clamp: true,
@@ -164,7 +161,6 @@ const renderTransportStatistic = (ctx, points) => {
         },
         ticks: {
           display: false
-          // beginAtZero: true
         }
       }]
     }
@@ -280,7 +276,6 @@ export default class Statistics extends AbstractSmartComponent {
     super();
 
     this._model = model;
-    // this.render();
   }
 
   getTemplate() {

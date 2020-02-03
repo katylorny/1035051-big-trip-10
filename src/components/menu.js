@@ -1,5 +1,5 @@
 import AbstractComponent from "./abstract-component";
-import {MENU_ITEMS} from "../constants";
+import {MenuItem} from "../constants";
 
 const ACTIVE_MENU_ITEM_CLASS = `trip-tabs__btn--active`;
 
@@ -24,11 +24,11 @@ export default class Menu extends AbstractComponent {
   constructor() {
     super();
 
-    this._currentMenuItem = MENU_ITEMS.TABLE;
+    this._currentMenuItem = MenuItem.TABLE;
   }
 
   getTemplate() {
-    return createMenuTemplate(Array.from(Object.values(MENU_ITEMS)), this._currentMenuItem);
+    return createMenuTemplate(Array.from(Object.values(MenuItem)), this._currentMenuItem);
   }
 
   setMenuItemClickHandler(handler) {
@@ -37,7 +37,7 @@ export default class Menu extends AbstractComponent {
         return;
       }
 
-      this._currentMenuItem = MENU_ITEMS[evt.target.textContent.toUpperCase()];
+      this._currentMenuItem = MenuItem[evt.target.textContent.toUpperCase()];
 
       handler(this._currentMenuItem);
 

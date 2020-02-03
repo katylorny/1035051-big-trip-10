@@ -1,10 +1,10 @@
-import {render, RENDER_POSITION} from "./utils/render";
+import {render, RenderPosition} from "./utils/render";
 import MenuComponent from './components/menu.js';
 import TripController from './controllers/trip-controller';
 import PointsModel from "./models/points-model";
 import FilterController from "./controllers/filter-controller";
 import StatisticsComponent from "./components/statistics";
-import {MENU_ITEMS} from "./constants";
+import {MenuItem} from "./constants";
 import API from "./api/api";
 import Loading from "./components/loading";
 import Store from './api/store.js';
@@ -19,6 +19,8 @@ const STORE_NAME = `${STORE_PREFIX}-${STORE_VER}`;
 const END_POINT = `https://htmlacademy-es-10.appspot.com/big-trip`;
 const AUTHORIZATION = `Basic er883jdzbdw345353456`;
 
+const tripEvents = document.querySelector(`.trip-events`);
+
 window.addEventListener(`load`, () => {
   navigator.serviceWorker.register(`/sw.js`)
     .then(() => {
@@ -30,7 +32,6 @@ window.addEventListener(`load`, () => {
 
 });
 
-const tripEvents = document.querySelector(`.trip-events`);
 const loadingComponent = new Loading();
 
 render(tripEvents, loadingComponent.getElement());
@@ -46,23 +47,6 @@ const offersTypesStore = new Store(`big-trip-offers-types-v1`, window.localStora
 const apiWithProvider = new Provider(api, store, destinationsStore, offersTypesStore);
 
 const pointsModel = new PointsModel();
-
-
-window.addEventListener(`online`, () => {
-  document.title = document.title.replace(` [offline]`, ``);
-
-  if (!apiWithProvider.getSynchronize()) {
-    apiWithProvider.sync()
-      .then(() => {
-      })
-      .catch(() => {
-      });
-  }
-});
-
-window.addEventListener(`offline`, () => {
-  document.title += ` [offline]`;
-});
 
 
 Promise.all([
@@ -81,7 +65,7 @@ Promise.all([
 
 
     const menu = new MenuComponent();
-    render(tripControlsMenuElement, menu.getElement(), RENDER_POSITION.AFTEREND);
+    render(tripControlsMenuElement, menu.getElement(), RenderPosition.AFTEREND);
 
     const tripController = new TripController(tripEvents, pointsModel, apiWithProvider);
 
@@ -98,13 +82,13 @@ Promise.all([
     document.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, tripController.createNewPoint);
     menu.setMenuItemClickHandler((currentMenuItem) => {
       switch (currentMenuItem) {
-        case MENU_ITEMS.TABLE:
+        case MenuItem.TABLE:
           statisticsComponent.hide();
           tripController.show();
           document.querySelector(`.trip-main__event-add-btn`).removeAttribute(`disabled`);
           break;
 
-        case MENU_ITEMS.STATS:
+        case MenuItem.STATS:
           document.querySelector(`.trip-main__event-add-btn`).setAttribute(`disabled`, `true`);
           statisticsComponent.show();
           tripController.hide();
@@ -113,3 +97,19 @@ Promise.all([
     });
 
   });
+
+window.addEventListener(`online`, () => {
+  document.title = document.title.replace(` [offline]`, ``);
+
+  if (!apiWithProvider.getSynchronize()) {
+    apiWithProvider.sync()
+      .then(() => {
+      })
+      .catch(() => {
+      });
+  }
+});
+
+window.addEventListener(`offline`, () => {
+  document.title += ` [offline]`;
+});

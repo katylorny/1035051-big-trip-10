@@ -1,8 +1,8 @@
 import TripComponent from "../components/create-trip";
-import {remove, render, RENDER_POSITION, replace} from "../utils/render";
+import {remove, render, RenderPosition, replace} from "../utils/render";
 import NoPointsComponent from "../components/no-points";
-import SortComponent, {SORT_TYPES} from "../components/sort";
-import PointController, {EmptyPointModel, MODES} from "./point-controller";
+import SortComponent, {SortType} from "../components/sort";
+import PointController, {EmptyPointModel, Mode} from "./point-controller";
 import {getSortedPoints} from "../utils/sort";
 import Days from "../components/days";
 import moment from "moment/moment";
@@ -13,7 +13,7 @@ const renderEvents = (events, cardsList, onDataChange, onViewChange, api) => {
   return (events.slice().map((event) => {
     const pointController = new PointController(cardsList, onDataChange, onViewChange, api);
 
-    pointController.render(event, MODES.DEFAULT);
+    pointController.render(event, Mode.DEFAULT);
     return pointController;
   }));
 };
@@ -32,7 +32,7 @@ export const calculatePrice = (events) => {
   tripCost.textContent = `${price}`;
 };
 
-export const TRIP_MODE = {
+export const TripMode = {
   DEFAULT: `default`,
   ADDING_FIRST_POINT: `addingFirstPoint`,
 };
@@ -43,7 +43,7 @@ export default class TripController {
     this._model = model;
     this._api = api;
 
-    this._activeTripMode = TRIP_MODE.DEFAULT;
+    this._activeTripMode = TripMode.DEFAULT;
     this._noPoints = new NoPointsComponent().getElement();
     this._tripInfoElement = document.querySelector(`.trip-main__trip-info`);
     this._tripComponent = null;
@@ -57,7 +57,7 @@ export default class TripController {
 
     this._addingPointController = null;
 
-    this._activeSortType = SORT_TYPES.EVENT;
+    this._activeSortType = SortType.EVENT;
 
     this._updatePoints = this._updatePoints.bind(this);
 
@@ -82,19 +82,19 @@ export default class TripController {
 
     if (this._model.getAllPoints().length === 0) {
       render(this._container, this._noPoints);
-      this._activeTripMode = TRIP_MODE.ADDING_FIRST_POINT;
+      this._activeTripMode = TripMode.ADDING_FIRST_POINT;
       if (this._tripComponent) {
         remove(this._tripComponent);
         this._tripComponent = null;
       }
     } else {
-      this._activeTripMode = TRIP_MODE.DEFAULT;
+      this._activeTripMode = TripMode.DEFAULT;
       render(this._container, this._sortComponent.getElement());
 
 
       if (!this._tripComponent) {
         this._tripComponent = new TripComponent(this._model);
-        render(this._tripInfoElement, this._tripComponent.getElement(), RENDER_POSITION.AFTERBEGIN);
+        render(this._tripInfoElement, this._tripComponent.getElement(), RenderPosition.AFTERBEGIN);
       } else {
         const oldTripComponent = this._tripComponent;
         this._tripComponent = new TripComponent(this._model);
@@ -103,7 +103,7 @@ export default class TripController {
       }
       this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
 
-      if (this._activeSortType === SORT_TYPES.EVENT) {
+      if (this._activeSortType === SortType.EVENT) {
         this._renderWithDays();
       } else {
         this._renderWithoutDays(this._events);
@@ -121,13 +121,13 @@ export default class TripController {
     }
     this._onViewChange();
 
-    if (this._activeTripMode === TRIP_MODE.ADDING_FIRST_POINT) {
+    if (this._activeTripMode === TripMode.ADDING_FIRST_POINT) {
       this._container.innerHTML = ``;
-      this._addingPointController = new PointController(this._container, this._onDataChange, this._onViewChange, this._api, TRIP_MODE.ADDING_FIRST_POINT);
-      this._addingPointController.render(EmptyPointModel, MODES.ADDING);
+      this._addingPointController = new PointController(this._container, this._onDataChange, this._onViewChange, this._api, TripMode.ADDING_FIRST_POINT);
+      this._addingPointController.render(EmptyPointModel, Mode.ADDING);
     } else {
       this._addingPointController = new PointController(this._sortComponent.getElement(), this._onDataChange, this._onViewChange, this._api);
-      this._addingPointController.render(EmptyPointModel, MODES.ADDING);
+      this._addingPointController.render(EmptyPointModel, Mode.ADDING);
     }
 
     const onEscKeyDown = (evt) => {
@@ -210,7 +210,7 @@ export default class TripController {
       render(this._container, this._noDaysComponent.getElement());
     }
 
-    const sortedPoints = getSortedPoints(points, this._activeSortType); // TODO
+    const sortedPoints = getSortedPoints(points, this._activeSortType);
     this._controllers = renderEvents(sortedPoints, this._noDaysComponent.getElement().querySelector(`.trip-events__list`), this._onDataChange, this._onViewChange, this._api);
 
   }
@@ -222,8 +222,6 @@ export default class TripController {
       this._noDaysComponent = null;
     }
 
-    // this._onSortTypeChange(this._activeSortType); // TODO
-
     this.render();
   }
 
@@ -232,7 +230,7 @@ export default class TripController {
     this.removePoints();
     const sortedPoints = getSortedPoints(this._events, sortType);
 
-    if (sortType === SORT_TYPES.EVENT) {
+    if (sortType === SortType.EVENT) {
       this._renderWithDays();
     } else {
       this._renderWithoutDays(sortedPoints);
@@ -297,7 +295,6 @@ export default class TripController {
 
       const newPointButton = document.querySelector(`.trip-main__event-add-btn`);
       newPointButton.removeAttribute(`disabled`);
-      // newPointButton.addEventListener(`click`, this.createNewPoint);
     }
   }
 }

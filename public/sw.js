@@ -3,7 +3,6 @@ const CACHE_VER = `v1`;
 const CACHE_NAME = `${CACHE_PREFIX}-${CACHE_VER}`;
 
 self.addEventListener(`install`, (evt) => {
-  console.log(`install`)
   evt.waitUntil(caches.open(CACHE_NAME)
     .then((cache) => {
       return cache.addAll([
@@ -31,7 +30,6 @@ self.addEventListener(`install`, (evt) => {
 });
 
 self.addEventListener(`activate`, (evt) => {
-  console.log(`activate`)
   evt.waitUntil(
     caches.keys()
       .then(
@@ -53,7 +51,6 @@ self.addEventListener(`activate`, (evt) => {
 });
 
 const fetchHandler = (evt) => {
-  console.log(`fetch`)
   const {request} = evt;
 
   evt.respondWith(

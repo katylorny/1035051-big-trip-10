@@ -119,7 +119,7 @@ export default class Provider {
 
       return this._api.sync(storePoints)
         .then((response) => {
-          storePoints.filter((point) => point.offline).forEach((task) => { // ОШИБКА
+          storePoints.filter((point) => point.offline).forEach((task) => {
             this._store.removeItem(task.id);
           });
 
