@@ -6,9 +6,15 @@ import FilterController from "./controllers/filter-controller";
 import StatisticsComponent from "./components/statistics";
 import {MENU_ITEMS} from "./constants";
 import API from "./api/api";
+import Loading from "./components/loading";
 
 const END_POINT = `https://htmlacademy-es-10.appspot.com/big-trip`;
 const AUTHORIZATION = `Basic er883jdzbdw345353456`;
+
+const tripEvents = document.querySelector(`.trip-events`);
+const loadingComponent = new Loading();
+
+render(tripEvents, loadingComponent.getElement());
 
 const api = new API(END_POINT, AUTHORIZATION);
 
@@ -32,8 +38,6 @@ Promise.all([
 
     const menu = new MenuComponent();
     render(tripControlsMenuElement, menu.getElement(), RENDER_POSITION.AFTEREND);
-
-    const tripEvents = document.querySelector(`.trip-events`);
 
     const tripController = new TripController(tripEvents, pointsModel, api);
 

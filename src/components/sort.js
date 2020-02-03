@@ -60,15 +60,14 @@ export default class Sort extends AbstractComponent {
       if (evt.target.tagName !== `LABEL`) {
         return;
       }
-
       const sortType = evt.target.dataset.sortType;
+
 
       if (this._currentSortType === sortType) {
         return;
       }
 
       this._currentSortType = sortType;
-
       handler(this._currentSortType);
     });
   }

@@ -6,6 +6,7 @@ import {MODES} from "../controllers/point-controller";
 import StorageModel from "../models/storage-model";
 import PointModel from "../models/point-model";
 import he from 'he';
+import {reformatDate} from "../utils/common";
 
 // const OPTION_NAME_PREFIX = `event-offer-`;
 
@@ -140,16 +141,16 @@ const createEditEventTemplate = (event, additionalEvent, mode) => {
                         <input type="number" class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}" >
                       </div>
                       <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabledSaveButton ? `disabled` : ``}>Save</button>
-                      <button class="event__reset-btn" type="reset">Delete</button>
+                      <button class="event__reset-btn" type="reset">${mode === MODES.ADDING ? `Cancel` : `Delete`}</button>
 
-                      <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" 
+                      ${mode !== MODES.ADDING ? `<input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" 
                              name="event-favorite" ${isFavorite ? `checked` : ``}>
                       <label class="event__favorite-btn" for="event-favorite-1">
                         <span class="visually-hidden">Add to favorite</span>
                         <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
                           <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
                         </svg>
-                      </label>
+                      </label>` : ``}
 
                       ${mode === MODES.ADDING ? `` : `<button class="event__rollup-btn" type="button">
                                                         <span class="visually-hidden">Open event</span>
@@ -158,7 +159,7 @@ const createEditEventTemplate = (event, additionalEvent, mode) => {
                       
                     </header>
 
-                    ${city ? `<section class="event__details">
+                    ${options ? `<section class="event__details">
                                 ${allOptionsOfType.length > 0 ? `<section class="event__section  event__section--offers">
                                   <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
@@ -167,7 +168,7 @@ const createEditEventTemplate = (event, additionalEvent, mode) => {
                                   </div>
                                 </section>` : ``}
 
-                                <section class="event__section  event__section--destination">
+                                ${city ? `<section class="event__section  event__section--destination">
                                   <h3 class="event__section-title  event__section-title--destination">Destination</h3>
                                   <p class="event__destination-description">${description}</p>
 
@@ -176,7 +177,7 @@ const createEditEventTemplate = (event, additionalEvent, mode) => {
                                       ${createPhotosTemplate(photos)}
                                     </div>
                                   </div>
-                                </section>
+                                </section>` : ``}
                               </section>` : ``}
                                           </form>`
   );
@@ -196,6 +197,7 @@ export default class EditEvent extends AbstractSmartComponent {
     this._submitHandler = null;
     this._deleteButtonHandler = null;
     this._rollupButtonClickHandler = null;
+    this._favoriteButtonClickHandler = null;
 
     this._subscribeOnEvents();
 
@@ -257,7 +259,10 @@ export default class EditEvent extends AbstractSmartComponent {
   }
 
   setFavoriteButtonClickHandler(handler) {
-    this.getElement().querySelector(`.event__favorite-icon`).addEventListener(`click`, handler);
+    if (this.getElement().querySelector(`.event__favorite-icon`)) {
+      this.getElement().querySelector(`.event__favorite-icon`).addEventListener(`click`, handler);
+      this._favoriteButtonClickHandler = handler;
+    }
   }
 
   recoveryListeners() {
@@ -265,6 +270,7 @@ export default class EditEvent extends AbstractSmartComponent {
     this.setSubmitFormHandler(this._submitHandler);
     this.setDeleteButtonHandler(this._deleteButtonHandler);
     this.setRollupButtonClickHandler(this._rollupButtonClickHandler);
+    this.setFavoriteButtonClickHandler(this._favoriteButtonClickHandler);
 
     this._subscribeOnEvents();
   }
@@ -278,9 +284,7 @@ export default class EditEvent extends AbstractSmartComponent {
       .map((el) => {
         return {
           title: el.querySelector(`.event__offer-title`).textContent,
-          // type: el.querySelector(`.event__offer-checkbox`).name.substring(OPTION_NAME_PREFIX.length),
           price: +el.querySelector(`.event__offer-price`).textContent,
-          // isChecked: el.querySelector(`.event__offer-checkbox`).checked
         };
       });
 
@@ -296,7 +300,6 @@ export default class EditEvent extends AbstractSmartComponent {
       }),
       id: this._event.id,
     };
-
   }
 
 
@@ -319,15 +322,7 @@ export default class EditEvent extends AbstractSmartComponent {
   _subscribeOnEvents() {
     const element = this.getElement();
 
-
-//     element.querySelector(`#event-end-time-1`).addEventListener(`click`, (evt) => {  ///////////////////////////////////////////
-//       const startDate = element.querySelector(`#event-start-time-1`);
-//       console.log(evt.target.value)
-// flatpickr(evt.target.value, {minDate: evt.value})
-//       }
-//     );
-
-
+    // typeList
     element.querySelector(`.event__type-list`).addEventListener(`click`, (evt) => {
 
       if (evt.target.tagName === `LABEL`) {
@@ -343,6 +338,7 @@ export default class EditEvent extends AbstractSmartComponent {
       destinationInput.removeAttribute(`value`);
     });
 
+    // city
     destinationInput.addEventListener(`change`, (evt) => {
 
       const selectedCity = StorageModel.getCities().find((city) => city === evt.target.value);
@@ -358,13 +354,14 @@ export default class EditEvent extends AbstractSmartComponent {
       this.rerender();
     });
 
+    // price
     const priceInput = element.querySelector(`.event__input--price`);
     priceInput.addEventListener(`change`, () => {
       this._additionalEvent.price = priceInput.value;
       this._checkFormForSubmit();
     });
 
-
+    // offers
     const offers = Array.from(element.querySelectorAll(`.event__offer-selector`));
     offers.forEach((offer) => {
       offer.addEventListener(`change`, (evt) => {
@@ -374,12 +371,22 @@ export default class EditEvent extends AbstractSmartComponent {
             price: offer.querySelector(`.event__offer-price`).textContent,
           });
         } else {
-
           const index = this._additionalEvent.options.findIndex((option) => option.title === offer.querySelector(`.event__offer-title`).textContent);
           this._additionalEvent.options = [].concat(this._additionalEvent.options.slice(0, index), this._additionalEvent.options.slice(index + 1));
-
         }
       });
+    });
+
+    // start time
+    const startTime = element.querySelector(`#event-start-time-1`);
+    startTime.addEventListener(`change`, (evt) => {
+      this._additionalEvent.startTime = reformatDate(evt.target.value);
+    });
+
+    // end time
+    const endTime = element.querySelector(`#event-end-time-1`);
+    endTime.addEventListener(`change`, (evt) => {
+      this._additionalEvent.endTime = reformatDate(evt.target.value);
     });
   }
 
@@ -393,11 +400,11 @@ export default class EditEvent extends AbstractSmartComponent {
     let startPickr = flatpickr(startDate, {
       enableTime: true,
       dateFormat: `d/m/Y H:i`,
-      onClose: function (selectedDates, dateStr) {
-        endPickr.set('minDate', dateStr);
+      onClose: (selectedDates, dateStr) => {
+        endPickr.set(`minDate`, dateStr);
         endPickr.jumpToDate(selectedDates[0]);
       },
-      onChange: function () {
+      onChange: () => {
         startPickr.close();
         endPickr.open();
       }
@@ -407,7 +414,7 @@ export default class EditEvent extends AbstractSmartComponent {
     let endPickr = flatpickr(endDate, {
       enableTime: true,
       dateFormat: `d/m/Y H:i`,
-      onChange: function () {
+      onChange: () => {
         endPickr.close();
       }
     });
