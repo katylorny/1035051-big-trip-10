@@ -1,5 +1,5 @@
 import FilterComponent from "../components/filter";
-import {Filter, toUpper} from "../constants";
+import {Filter, makeFirstLetterUpper} from "../constants";
 import {render, replace} from "../utils/render";
 import {getPointsByFilter} from "../utils/filter";
 
@@ -39,7 +39,8 @@ export default class FilterController {
   }
 
   _onFilterChange(filterType) {
-    this._activeFilterType = toUpper(filterType);
+    this._activeFilterType = makeFirstLetterUpper(filterType);
+    this._model.setFilterType(this._activeFilterType);
     this.render();
   }
 

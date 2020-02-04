@@ -13,7 +13,7 @@ export const TYPES_MOVE = [`bus`, `drive`, `flight`, `ship`, `taxi`, `train`, `t
 export const TYPES_STAY = [`check-in`, `restaurant`, `sightseeing`];
 
 
-export const toUpper = (str) => {
+export const makeFirstLetterUpper = (str) => {
   return str
     .toLowerCase()
     .split(' ')
@@ -23,4 +23,4 @@ export const toUpper = (str) => {
       return word[0].toUpperCase() + word.substr(1);
     })
     .join(' ');
-}
+};

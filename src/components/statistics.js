@@ -64,14 +64,12 @@ const renderMoneyStatistic = (container, points) => {
     maintainAspectRatio: false,
 
     scales: {
-    //
+
       yAxes: [{
-        // barThickness: 40,
         gridLines: {
           display: false
         },
       }],
-    //
       xAxes: [{
         gridLines: {
           display: false
@@ -156,8 +154,6 @@ const renderTransportStatistic = (container, points) => {
     scales: {
 
       yAxes: [{
-        // barThickness: 40,
-        // barPercentage: 0.95,
         gridLines: {
           display: false
         },
@@ -248,7 +244,6 @@ const renderTimeSpendStatistic = (container, points) => {
         },
         ticks: {
           display: false
-          // beginAtZero: true
         }
       }]
     }
