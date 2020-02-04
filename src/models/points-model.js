@@ -1,10 +1,10 @@
-import {FILTERS} from "../constants";
+import {Filter} from "../constants";
 import {getPointsByFilter} from "../utils/filter";
 
 export default class PointsModel {
   constructor() {
     this._points = [];
-    this._activeFilterType = FILTERS.EVERYTHING;
+    this._activeFilterType = Filter.EVERYTHING;
 
     this._filterHandlers = [];
     this._dataChangeHandlers = [];

@@ -8,7 +8,7 @@ const BAR_HEIGHT = 40;
 const COEFF = 1.5;
 
 
-const renderMoneyStatistic = (ctx, points) => {
+const renderMoneyStatistic = (container, points) => {
 
   const types = Array.from(new Set(points.map((point) => point.type)));
 
@@ -29,7 +29,7 @@ const renderMoneyStatistic = (ctx, points) => {
     }]
   };
 
-  ctx.height = BAR_HEIGHT * COEFF * types.length;
+  container.height = BAR_HEIGHT * COEFF * types.length;
 
   const options = {
     legend: {
@@ -42,7 +42,6 @@ const renderMoneyStatistic = (ctx, points) => {
     },
     plugins: {
       datalabels: {
-        // color: '#36A2EB'
         anchor: `end`,
         align: `right`,
         clamp: true,
@@ -58,31 +57,33 @@ const renderMoneyStatistic = (ctx, points) => {
       },
     },
 
+    dataset: {
+      barThickness: 40,
+    },
+
     maintainAspectRatio: false,
 
     scales: {
-
+    //
       yAxes: [{
-        barThickness: 40,
-        // barPercentage: 0.95,
+        // barThickness: 40,
         gridLines: {
           display: false
         },
       }],
-
+    //
       xAxes: [{
         gridLines: {
           display: false
         },
         ticks: {
           display: false
-          // beginAtZero: true
         }
       }]
     }
   };
 
-  return new Chart(ctx, {
+  return new Chart(container, {
     plugins: [ChartDataLabels],
     type: `horizontalBar`,
     data,
@@ -90,7 +91,7 @@ const renderMoneyStatistic = (ctx, points) => {
   });
 };
 
-const renderTransportStatistic = (ctx, points) => {
+const renderTransportStatistic = (container, points) => {
 
   const types = points.map((point) => point.type); // все типы которые есть в поинтах
   const allTypesOfTransport = types.filter((type) => TYPES_MOVE.indexOf(type) !== -1);
@@ -117,7 +118,7 @@ const renderTransportStatistic = (ctx, points) => {
     }]
   };
 
-  ctx.height = BAR_HEIGHT * COEFF * typesOfTransportSet.length;
+  container.height = BAR_HEIGHT * COEFF * typesOfTransportSet.length;
 
   const options = {
     legend: {
@@ -130,7 +131,6 @@ const renderTransportStatistic = (ctx, points) => {
     },
     plugins: {
       datalabels: {
-        // color: '#36A2EB'
         anchor: `end`,
         align: `right`,
         clamp: true,
@@ -148,10 +148,15 @@ const renderTransportStatistic = (ctx, points) => {
 
     maintainAspectRatio: false,
 
+    dataset: {
+      barThickness: 40,
+    },
+
+
     scales: {
 
       yAxes: [{
-        barThickness: 40,
+        // barThickness: 40,
         // barPercentage: 0.95,
         gridLines: {
           display: false
@@ -164,13 +169,12 @@ const renderTransportStatistic = (ctx, points) => {
         },
         ticks: {
           display: false
-          // beginAtZero: true
         }
       }]
     }
   };
 
-  return new Chart(ctx, {
+  return new Chart(container, {
     plugins: [ChartDataLabels],
     type: `horizontalBar`,
     data,
@@ -178,11 +182,11 @@ const renderTransportStatistic = (ctx, points) => {
   });
 };
 
-const renderTimeSpendStatistic = (ctx, points) => {
+const renderTimeSpendStatistic = (container, points) => {
   const types = points.map((point) => `${point.type}: ${point.city}`);
 
   const typesDuration = points.map((point) => {
-    return timeDuration(point.startTime, point.endTime).asHours();
+    return Math.round(timeDuration(point.startTime, point.endTime).asHours());
   });
 
   const data = {
@@ -195,7 +199,7 @@ const renderTimeSpendStatistic = (ctx, points) => {
     }]
   };
 
-  ctx.height = BAR_HEIGHT * COEFF * types.length;
+  container.height = BAR_HEIGHT * COEFF * types.length;
 
   const options = {
     legend: {
@@ -225,10 +229,14 @@ const renderTimeSpendStatistic = (ctx, points) => {
 
     maintainAspectRatio: false,
 
+    dataset: {
+      barThickness: 40,
+    },
+
     scales: {
 
       yAxes: [{
-        barThickness: 40,
+        // barThickness: 40,
         gridLines: {
           display: false
         },
@@ -246,7 +254,7 @@ const renderTimeSpendStatistic = (ctx, points) => {
     }
   };
 
-  return new Chart(ctx, {
+  return new Chart(container, {
     plugins: [ChartDataLabels],
     type: `horizontalBar`,
     data,
@@ -280,7 +288,6 @@ export default class Statistics extends AbstractSmartComponent {
     super();
 
     this._model = model;
-    // this.render();
   }
 
   getTemplate() {

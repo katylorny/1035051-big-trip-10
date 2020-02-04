@@ -1,13 +1,14 @@
 import FilterComponent from "../components/filter";
-import {FILTERS} from "../constants";
+import {Filter, toUpper} from "../constants";
 import {render, replace} from "../utils/render";
+import {getPointsByFilter} from "../utils/filter";
 
 export default class FilterController {
   constructor(container, model) {
     this._container = container;
     this._model = model;
 
-    this._activeFilterType = FILTERS.EVERYTHING;
+    this._activeFilterType = Filter.EVERYTHING;
     this._onFilterChange = this._onFilterChange.bind(this);
     this._onDataChange = this._onDataChange.bind(this);
     this._model.getFunctionFromFilterController(this._onDataChange);
@@ -18,10 +19,11 @@ export default class FilterController {
 
   render() {
     const container = this._container;
-    const filters = Object.values(FILTERS).map((filterType) => {
+    const filters = Object.values(Filter).map((filterType) => {
       return {
         title: filterType,
         isChecked: filterType === this._activeFilterType,
+        isEmpty: getPointsByFilter(this._model.getAllPoints(), filterType).length === 0,
       };
     });
 
@@ -37,11 +39,8 @@ export default class FilterController {
   }
 
   _onFilterChange(filterType) {
-    this._activeFilterType = filterType;
-    this._model.setFilterType(filterType);
+    this._activeFilterType = toUpper(filterType);
     this.render();
-
-    this._model._filterHandlers.forEach((handler) => handler());
   }
 
   _onDataChange() {

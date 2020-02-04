@@ -1,13 +1,15 @@
 import CardComponent from "../components/create-card";
-import {render, RENDER_POSITION} from "../utils/render";
+import {render, RenderPosition} from "../utils/render";
 import EditEventComponent from "../components/edit-event";
 import {replace, remove} from "../utils/render";
-import {TRIP_MODE} from "./trip-controller";
+import {TripMode} from "./trip-controller";
 import {reformatDate} from "../utils/common";
 import PointModel from "../models/point-model";
 
 const SHAKE_ANIMATION_TIMEOUT = 600;
-const EmptyPoint = {
+
+
+const emptyPoint = {
   'type': `transport`,
   'destination': {
     'name': ``,
@@ -21,25 +23,21 @@ const EmptyPoint = {
   "is_favorite": false,
 };
 
-
-const BUTTONS_LOAD_TEXT = {
-  deleteButtonText: `Deleting...`,
-  saveButtonText: `Saving...`,
-};
-
-const BUTTONS_DEFAULT_TEXT = {
-  deleteButtonText: `Delete`,
-  saveButtonText: `Save`,
-};
-
-export const EmptyPointModel = new PointModel(EmptyPoint);
-
-export const MODES = {
+export const Mode = {
   DEFAULT: `default`,
   EDIT: `edit`,
   ADDING: `adding`,
 };
 
+const ButtonsLoadText = {
+  deleteButtonText: `Deleting...`,
+  saveButtonText: `Saving...`,
+};
+
+const ButtonsDefaultText = {
+  deleteButtonText: `Delete`,
+  saveButtonText: `Save`,
+};
 
 const parseFormData = ({formData, offers, description, photos, id}) => {
 
@@ -59,8 +57,10 @@ const parseFormData = ({formData, offers, description, photos, id}) => {
   });
 };
 
+export const EmptyPointModel = new PointModel(emptyPoint);
+
 export default class PointController {
-  constructor(container, onDataChange, onViewChange, api, tripMode = TRIP_MODE.DEFAULT) {
+  constructor(container, onDataChange, onViewChange, api, tripMode = TripMode.DEFAULT) {
     this._container = container;
     this._onDataChange = onDataChange;
     this._onViewChange = onViewChange;
@@ -71,8 +71,7 @@ export default class PointController {
 
     this._eventComponent = null;
     this._eventEditComponent = null;
-    this._mode = MODES.DEFAULT;
-    // this._tripMode = tripMode; - передавалось чтобы отделить режим создания первого поинта
+    this._mode = Mode.DEFAULT;
   }
 
   render(event, mode) {
@@ -98,7 +97,7 @@ export default class PointController {
 
     this._eventEditComponent.setSubmitFormHandler(() => {
 
-      this._setSaveButtonText(BUTTONS_LOAD_TEXT.saveButtonText);
+      this._setSaveButtonText(ButtonsLoadText.saveButtonText);
       const newData = parseFormData(this._eventEditComponent.getData());
       this._blockForm(true);
       this._onDataChange(this, event, newData);
@@ -114,31 +113,31 @@ export default class PointController {
 
     this._eventEditComponent.setDeleteButtonHandler(() => {
       this._blockForm(true);
-      this._setDeleteButtonText(BUTTONS_LOAD_TEXT.deleteButtonText);
+      this._setDeleteButtonText(ButtonsLoadText.deleteButtonText);
       this._onDataChange(this, event, null);
       document.querySelector(`.trip-main__event-add-btn`).removeAttribute(`disabled`);
     });
 
     switch (this._mode) {
-      case MODES.DEFAULT:
+      case Mode.DEFAULT:
         if (oldEventComponent && oldEventEditComponent) {
           replace(this._eventComponent, oldEventComponent);
           replace(this._eventEditComponent, oldEventEditComponent);
         } else {
-          render(this._container, this._eventComponent.getElement(), RENDER_POSITION.BEFOREEND);
+          render(this._container, this._eventComponent.getElement(), RenderPosition.BEFOREEND);
         }
         break;
 
-      case MODES.ADDING:
+      case Mode.ADDING:
         if (oldEventComponent && oldEventEditComponent) {
           remove(oldEventEditComponent);
           remove(oldEventComponent);
         }
 
-        if (this._tripMode === TRIP_MODE.ADDING_FIRST_POINT) {
-          render(this._container, this._eventEditComponent.getElement(), RENDER_POSITION.AFTERBEGIN);
+        if (this._tripMode === TripMode.ADDING_FIRST_POINT) {
+          render(this._container, this._eventEditComponent.getElement(), RenderPosition.AFTERBEGIN);
         } else {
-          render(this._container, this._eventEditComponent.getElement(), RENDER_POSITION.AFTEREND);
+          render(this._container, this._eventEditComponent.getElement(), RenderPosition.AFTEREND);
         }
         break;
 
@@ -152,13 +151,13 @@ export default class PointController {
 
       this._blockForm(false);
 
-      this._setSaveButtonText(BUTTONS_DEFAULT_TEXT.saveButtonText);
-      this._setDeleteButtonText(BUTTONS_DEFAULT_TEXT.deleteButtonText);
+      this._setSaveButtonText(ButtonsDefaultText.saveButtonText);
+      this._setDeleteButtonText(ButtonsDefaultText.deleteButtonText);
     }, SHAKE_ANIMATION_TIMEOUT);
   }
 
   setDefaultView() {
-    if (this._mode === MODES.EDIT) {
+    if (this._mode === Mode.EDIT) {
       this._replaceEditToCard();
     }
   }
@@ -202,12 +201,12 @@ export default class PointController {
     this._eventEditComponent.reset();
     this._eventEditComponent.rerender();
     replace(this._eventComponent, this._eventEditComponent);
-    this._mode = MODES.DEFAULT;
+    this._mode = Mode.DEFAULT;
   }
 
   _replaceCardToEdit() {
     this._onViewChange();
     replace(this._eventEditComponent, this._eventComponent);
-    this._mode = MODES.EDIT;
+    this._mode = Mode.EDIT;
   }
 }

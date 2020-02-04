@@ -2,17 +2,20 @@ import {TYPES_MOVE, TYPES_STAY} from "../constants";
 import AbstractSmartComponent from "./abstract-smart-component";
 import flatpickr from 'flatpickr';
 import moment from 'moment';
-import {MODES} from "../controllers/point-controller";
+import {Mode} from "../controllers/point-controller";
 import StorageModel from "../models/storage-model";
 import PointModel from "../models/point-model";
 import he from 'he';
 import {reformatDate} from "../utils/common";
 
-// const OPTION_NAME_PREFIX = `event-offer-`;
+import debounce from 'lodash/debounce';
 
-const createTypesTemplate = (arr, type) => {
+const DEBOUNCE_TIMEOUT = 500;
+
+
+const createTypesTemplate = (array, type) => {
   return (
-    arr.map((typeOfEvent) => {
+    array.map((typeOfEvent) => {
       return (
         `<div class="event__type-item">
           <input id="event-type-${typeOfEvent}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" 
@@ -24,8 +27,8 @@ const createTypesTemplate = (arr, type) => {
   );
 };
 
-const createOfferTemplate = (arr) => {
-  return arr.map((offer) => {
+const createOfferTemplate = (array) => {
+  return array.map((offer) => {
 
     const {title: offerName, price: offerPrice, isChecked} = offer;
     const offerType = offerName.toString().toLowerCase().split(` `).join(`-`);
@@ -44,8 +47,8 @@ const createOfferTemplate = (arr) => {
 };
 
 const createCitiesListTemplate = (cities) => {
-  return cities.map((el) => {
-    return `<option value="${el}"></option>`;
+  return cities.map((element) => {
+    return `<option value="${element}"></option>`;
   }).join(`\n`);
 };
 
@@ -81,7 +84,7 @@ const createEditEventTemplate = (event, additionalEvent, mode) => {
   const isDisabledSaveButton = (!price || !city);
 
   return (
-    `<form class="event  event--edit ${mode === MODES.ADDING ? `trip-events__item` : ``}" action="#" method="post">
+    `<form class="event  event--edit ${mode === Mode.ADDING ? `trip-events__item` : ``}" action="#" method="post">
                     <header class="event__header">
                       <div class="event__type-wrapper">
                         <label class="event__type  event__type-btn" for="event-type-toggle-1">
@@ -141,9 +144,9 @@ const createEditEventTemplate = (event, additionalEvent, mode) => {
                         <input type="number" class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}" >
                       </div>
                       <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabledSaveButton ? `disabled` : ``}>Save</button>
-                      <button class="event__reset-btn" type="reset">${mode === MODES.ADDING ? `Cancel` : `Delete`}</button>
+                      <button class="event__reset-btn" type="reset">${mode === Mode.ADDING ? `Cancel` : `Delete`}</button>
 
-                      ${mode !== MODES.ADDING ? `<input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" 
+                      ${mode !== Mode.ADDING ? `<input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" 
                              name="event-favorite" ${isFavorite ? `checked` : ``}>
                       <label class="event__favorite-btn" for="event-favorite-1">
                         <span class="visually-hidden">Add to favorite</span>
@@ -152,7 +155,7 @@ const createEditEventTemplate = (event, additionalEvent, mode) => {
                         </svg>
                       </label>` : ``}
 
-                      ${mode === MODES.ADDING ? `` : `<button class="event__rollup-btn" type="button">
+                      ${mode === Mode.ADDING ? `` : `<button class="event__rollup-btn" type="button">
                                                         <span class="visually-hidden">Open event</span>
                                                       </button>`}
                
@@ -238,7 +241,7 @@ export default class EditEvent extends AbstractSmartComponent {
   }
 
   setRollupButtonClickHandler(handler) {
-    if (this._mode !== MODES.ADDING) {
+    if (this._mode !== Mode.ADDING) {
       this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, handler);
       this._rollupButtonClickHandler = handler;
     }
@@ -260,7 +263,7 @@ export default class EditEvent extends AbstractSmartComponent {
 
   setFavoriteButtonClickHandler(handler) {
     if (this.getElement().querySelector(`.event__favorite-icon`)) {
-      this.getElement().querySelector(`.event__favorite-icon`).addEventListener(`click`, handler);
+      this.getElement().querySelector(`.event__favorite-icon`).addEventListener(`click`, debounce(handler, DEBOUNCE_TIMEOUT));
       this._favoriteButtonClickHandler = handler;
     }
   }
@@ -397,7 +400,7 @@ export default class EditEvent extends AbstractSmartComponent {
     }
 
     const startDate = this.getElement().querySelector(`#event-start-time-1`);
-    let startPickr = flatpickr(startDate, {
+    const startPickr = flatpickr(startDate, {
       enableTime: true,
       dateFormat: `d/m/Y H:i`,
       onClose: (selectedDates, dateStr) => {
@@ -411,7 +414,7 @@ export default class EditEvent extends AbstractSmartComponent {
     });
 
     const endDate = this.getElement().querySelector(`#event-end-time-1`);
-    let endPickr = flatpickr(endDate, {
+    const endPickr = flatpickr(endDate, {
       enableTime: true,
       dateFormat: `d/m/Y H:i`,
       onChange: () => {

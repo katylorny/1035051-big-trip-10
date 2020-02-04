@@ -1,7 +1,7 @@
 import PointModel from "../models/point-model";
 import StorageModel from "../models/storage-model";
 
-const METHOD = {
+const Method = {
   GET: `GET`,
   POST: `POST`,
   PUT: `PUT`,
@@ -51,7 +51,7 @@ export default class API {
   updatePoint(id, data) {
     return this._load({
       url: `points/${id}`,
-      method: METHOD.PUT,
+      method: Method.PUT,
       body: JSON.stringify(data.toRAW()),
       headers: new Headers({'Content-Type': `application/json`})
     })
@@ -63,7 +63,7 @@ export default class API {
   createPoint(point) {
     return this._load({
       url: `points`,
-      method: METHOD.POST,
+      method: Method.POST,
       body: JSON.stringify(point.toRAW()),
       headers: new Headers({'Content-Type': `application/json`})
     })
@@ -74,21 +74,21 @@ export default class API {
   deletePoint(id) {
     return this._load({
       url: `points/${id}`,
-      method: METHOD.DELETE,
+      method: Method.DELETE,
     });
   }
 
   sync(data) {
     return this._load({
       url: `points/sync`,
-      method: METHOD.POST,
+      method: Method.POST,
       body: JSON.stringify(data),
       headers: new Headers({'Content-Type': `application/json`})
     })
       .then((response) => response.json());
   }
 
-  _load({url, method = METHOD.GET, body = null, headers = new Headers()}) {
+  _load({url, method = Method.GET, body = null, headers = new Headers()}) {
     headers.append(`Authorization`, this._authorization);
 
     return fetch(`${this._endPoint}/${url}`, {method, body, headers})

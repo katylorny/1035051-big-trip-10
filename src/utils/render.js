@@ -5,21 +5,21 @@ export const createElement = (template) => {
 };
 
 
-export const RENDER_POSITION = {
+export const RenderPosition = {
   BEFOREEND: `beforeend`,
   AFTERBEGIN: `afterbegin`,
   AFTEREND: `afterend`
 };
 
-export const render = (container, template, place = RENDER_POSITION.BEFOREEND) => {
+export const render = (container, template, place = RenderPosition.BEFOREEND) => {
   switch (place) {
-    case RENDER_POSITION.AFTERBEGIN:
+    case RenderPosition.AFTERBEGIN:
       container.prepend(template);
       break;
-    case RENDER_POSITION.BEFOREEND:
+    case RenderPosition.BEFOREEND:
       container.append(template);
       break;
-    case RENDER_POSITION.AFTEREND:
+    case RenderPosition.AFTEREND:
       container.after(template);
   }
 };
