@@ -1,6 +1,7 @@
 import FilterComponent from "../components/filter";
 import {Filter} from "../constants";
 import {render, replace} from "../utils/render";
+import {getPointsByFilter} from "../utils/filter";
 
 export default class FilterController {
   constructor(container, model) {
@@ -22,6 +23,7 @@ export default class FilterController {
       return {
         title: filterType,
         isChecked: filterType === this._activeFilterType,
+        // isEmpty: getPointsByFilter(this._model.getAllPoints(), filterType).length === 0,
       };
     });
 
@@ -37,11 +39,11 @@ export default class FilterController {
   }
 
   _onFilterChange(filterType) {
-    this._activeFilterType = filterType;
-    this._model.setFilterType(filterType);
-    this.render();
+    console.log(`chanhhhhhhn`)
 
-    // this._model._filterHandlers.forEach((handler) => handler()); // TODO
+    this._model.setFilterType(filterType);
+    this._activeFilterType = filterType;
+    this.render();
   }
 
   _onDataChange() {

@@ -13,9 +13,9 @@ import debounce from 'lodash/debounce';
 const DEBOUNCE_TIMEOUT = 500;
 
 
-const createTypesTemplate = (arr, type) => {
+const createTypesTemplate = (array, type) => {
   return (
-    arr.map((typeOfEvent) => {
+    array.map((typeOfEvent) => {
       return (
         `<div class="event__type-item">
           <input id="event-type-${typeOfEvent}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" 
@@ -27,8 +27,8 @@ const createTypesTemplate = (arr, type) => {
   );
 };
 
-const createOfferTemplate = (arr) => {
-  return arr.map((offer) => {
+const createOfferTemplate = (array) => {
+  return array.map((offer) => {
 
     const {title: offerName, price: offerPrice, isChecked} = offer;
     const offerType = offerName.toString().toLowerCase().split(` `).join(`-`);
@@ -47,8 +47,8 @@ const createOfferTemplate = (arr) => {
 };
 
 const createCitiesListTemplate = (cities) => {
-  return cities.map((el) => {
-    return `<option value="${el}"></option>`;
+  return cities.map((element) => {
+    return `<option value="${element}"></option>`;
   }).join(`\n`);
 };
 

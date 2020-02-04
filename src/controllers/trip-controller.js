@@ -239,6 +239,8 @@ export default class TripController {
 
   }
 
+
+
   _onDataChange(pointController, oldData, newData) {
 
     if (oldData === EmptyPointModel) {

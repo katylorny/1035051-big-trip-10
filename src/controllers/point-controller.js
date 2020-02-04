@@ -9,7 +9,7 @@ import PointModel from "../models/point-model";
 const SHAKE_ANIMATION_TIMEOUT = 600;
 
 
-const EmptyPoint = {
+const emptyPoint = {
   'type': `transport`,
   'destination': {
     'name': ``,
@@ -57,7 +57,7 @@ const parseFormData = ({formData, offers, description, photos, id}) => {
   });
 };
 
-export const EmptyPointModel = new PointModel(EmptyPoint);
+export const EmptyPointModel = new PointModel(emptyPoint);
 
 export default class PointController {
   constructor(container, onDataChange, onViewChange, api, tripMode = TripMode.DEFAULT) {

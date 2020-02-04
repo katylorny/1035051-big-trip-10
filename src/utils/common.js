@@ -8,9 +8,9 @@ export const castTimeDateFormat = (value) => {
 export const timeDuration = (startTime, endTime) => {
   const a = moment(startTime);
   const b = moment(endTime);
-  const m = moment.duration(b - a);
+  const duration = moment.duration(b - a);
 
-  return m;
+  return duration;
 };
 
 export const reformatDate = (dateAsString) => {
