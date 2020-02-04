@@ -1,5 +1,5 @@
 import FilterComponent from "../components/filter";
-import {Filter} from "../constants";
+import {Filter, toUpper} from "../constants";
 import {render, replace} from "../utils/render";
 import {getPointsByFilter} from "../utils/filter";
 
@@ -23,7 +23,7 @@ export default class FilterController {
       return {
         title: filterType,
         isChecked: filterType === this._activeFilterType,
-        // isEmpty: getPointsByFilter(this._model.getAllPoints(), filterType).length === 0,
+        isEmpty: getPointsByFilter(this._model.getAllPoints(), filterType).length === 0,
       };
     });
 
@@ -39,10 +39,7 @@ export default class FilterController {
   }
 
   _onFilterChange(filterType) {
-    console.log(`chanhhhhhhn`)
-
-    this._model.setFilterType(filterType);
-    this._activeFilterType = filterType;
+    this._activeFilterType = toUpper(filterType);
     this.render();
   }
 

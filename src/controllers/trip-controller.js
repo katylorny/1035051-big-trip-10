@@ -235,8 +235,6 @@ export default class TripController {
     } else {
       this._renderWithoutDays(sortedPoints);
     }
-
-
   }
 
 

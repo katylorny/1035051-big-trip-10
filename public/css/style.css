@@ -1200,7 +1200,10 @@ main {
   animation: shake 0.6s;
 }
 
-/*.disabled-filter {*/
-  /*opacity: 0.1;*/
-  /*cursor: default;*/
-/*}*/
+.disabled-filter {
+  cursor: default;
+}
+
+.disabled-filter:hover {
+  opacity: 0.6;
+}

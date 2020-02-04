@@ -47,7 +47,10 @@ export default class Menu extends AbstractComponent {
 
   _setActiveItem(item) {
     const allMenuItems = Array.from(this.getElement().querySelectorAll(`.trip-tabs__btn`));
-    allMenuItems.forEach((menuItem) => menuItem.classList.remove(ACTIVE_MENU_ITEM_CLASS));
+    allMenuItems.forEach((menuItem) => {
+      // if ()
+      menuItem.classList.remove(ACTIVE_MENU_ITEM_CLASS)
+    });
 
     item.classList.add(ACTIVE_MENU_ITEM_CLASS);
   }
