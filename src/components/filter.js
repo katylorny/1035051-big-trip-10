@@ -45,7 +45,7 @@ export default class Filter extends AbstractComponent {
   }
 
   setFilterChangeHandler(handler) {
-    this.getElement().addEventListener(`click`, (evt) => {
+    this.getElement().addEventListener(`change`, (evt) => {
       console.log(9999, this.getElement());
       const filterName = evt.target.textContent;
       handler(filterName);
