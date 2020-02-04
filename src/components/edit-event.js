@@ -284,10 +284,10 @@ export default class EditEvent extends AbstractSmartComponent {
 
     const offers = Array.from(form.querySelectorAll(`.event__offer-selector`))
       .filter((it) => it.querySelector(`.event__offer-checkbox`).checked)
-      .map((el) => {
+      .map((element) => {
         return {
-          title: el.querySelector(`.event__offer-title`).textContent,
-          price: +el.querySelector(`.event__offer-price`).textContent,
+          title: element.querySelector(`.event__offer-title`).textContent,
+          price: +element.querySelector(`.event__offer-price`).textContent,
         };
       });
 
@@ -297,8 +297,8 @@ export default class EditEvent extends AbstractSmartComponent {
       description: form.querySelector(`.event__destination-description`).textContent,
       photos: Array.from(form.querySelectorAll(`.event__photo`)).map((photo) => {
         return {
-          'src': photo.src,
-          'description': photo.alt,
+          'src': photo.getAttribute(`src`),
+          'description': photo.getAttribute(`alt`),
         };
       }),
       id: this._event.id,

@@ -232,7 +232,6 @@ const renderTimeSpendStatistic = (container, points) => {
     scales: {
 
       yAxes: [{
-        // barThickness: 40,
         gridLines: {
           display: false
         },

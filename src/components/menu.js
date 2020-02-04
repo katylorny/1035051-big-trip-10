@@ -3,18 +3,18 @@ import {MenuItem} from "../constants";
 
 const ACTIVE_MENU_ITEM_CLASS = `trip-tabs__btn--active`;
 
-const generateMenuMarkup = (menuItemsArray, currentMenuItem) => {
-  return menuItemsArray.map((menuItem) => {
+const generateMenuMarkup = (menuItems, currentMenuItem) => {
+  return menuItems.map((menuItem) => {
     return (
       `<a class="trip-tabs__btn ${menuItem === currentMenuItem ? `trip-tabs__btn--active` : ``}" href="#">${menuItem}</a>`
     );
   }).join(`\n`);
 };
 
-const createMenuTemplate = (menuItemsArray, currentMenuItem) => { // Меню
+const createMenuTemplate = (menuItems, currentMenuItem) => { // Меню
   return (
     `<nav class="trip-controls__trip-tabs  trip-tabs">
-        ${generateMenuMarkup(menuItemsArray, currentMenuItem)}
+        ${generateMenuMarkup(menuItems, currentMenuItem)}
      </nav>`
   );
 };

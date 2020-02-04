@@ -16,8 +16,8 @@ const createOffersTemplate = (array) => {
 };
 
 
-export const createCardTemplate = (cardObject) => {
-  const {type, city, price, startTime, endTime, options} = cardObject;
+export const createCardTemplate = (card) => {
+  const {type, city, price, startTime, endTime, options} = card;
   const duration = timeDuration(startTime, endTime);
   const days = duration.days();
   const hours = duration.hours();
@@ -56,7 +56,7 @@ export const createCardTemplate = (cardObject) => {
                   </div>
                 </li>`
   );
-};// trip-events__item
+}; // trip-events__item
 
 export default class Card extends AbstractComponent {
   constructor(event) {
