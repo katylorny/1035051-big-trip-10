@@ -168,22 +168,15 @@ export default class PointController {
   }
 
   _blockForm(isToBeBlocked) {
-    const allFields = this._eventEditComponent.getElement().querySelectorAll(`form input, form button`);
-    if (isToBeBlocked) {
-      allFields.forEach((elem) => elem.setAttribute(`disabled`, `disabled`));
-    } else {
-      allFields.forEach((elem) => elem.removeAttribute(`disabled`));
-    }
+    this._eventEditComponent.blockForm(isToBeBlocked);
   }
 
   _setDeleteButtonText(text) {
-    const deleteButton = this._eventEditComponent.getElement().querySelector(`.event__reset-btn`);
-    deleteButton.textContent = text;
+    this._eventEditComponent.setDeleteButtonText(text);
   }
 
   _setSaveButtonText(text) {
-    const saveButton = this._eventEditComponent.getElement().querySelector(`.event__save-btn`);
-    saveButton.textContent = text;
+    this._eventEditComponent.setSaveButtonText(text);
   }
 
   _onEscKeyDown(evt) {

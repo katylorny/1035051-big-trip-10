@@ -305,6 +305,24 @@ export default class EditEvent extends AbstractSmartComponent {
     };
   }
 
+  blockForm(isToBeBlocked) {
+    const allFields = this.getElement().querySelectorAll(`form input, form button`);
+    if (isToBeBlocked) {
+      allFields.forEach((element) => element.setAttribute(`disabled`, `disabled`));
+    } else {
+      allFields.forEach((element) => element.removeAttribute(`disabled`));
+    }
+  }
+
+  setDeleteButtonText(text) {
+    const deleteButton = this.getElement().querySelector(`.event__reset-btn`);
+    deleteButton.textContent = text;
+  }
+
+  setSaveButtonText(text) {
+    const saveButton = this.getElement().querySelector(`.event__save-btn`);
+    saveButton.textContent = text;
+  }
 
   _checkFormForSubmit() {
     const destination = this.getElement().querySelector(`.event__input--destination`).value;
