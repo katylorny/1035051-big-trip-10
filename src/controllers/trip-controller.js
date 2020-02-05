@@ -40,6 +40,7 @@ export const TripMode = {
 export default class TripController {
   constructor(container, model, api) {
     this._container = container;
+    this._containerElement = this._container.getElement();
     this._model = model;
     this._api = api;
 
@@ -54,12 +55,14 @@ export default class TripController {
     this.createNewPoint = this.createNewPoint.bind(this);
 
     this._controllers = [];
+    this._enableButtonHandlers = [];
 
     this._addingPointController = null;
 
     this._activeSortType = SortType.EVENT;
 
     this._updatePoints = this._updatePoints.bind(this);
+    this._onEscKeyDown = this._onEscKeyDown.bind(this);
 
     this._model.getFunctionFromTripController(this._updatePoints);
     this._daysComponent = null;
@@ -68,20 +71,20 @@ export default class TripController {
   }
 
   hide() {
-    this._container.classList.add(`trip-events--hidden`);
+    this._container.hide();
   }
 
   show() {
-    this._container.classList.remove(`trip-events--hidden`);
+    this._container.show();
   }
 
   render() {
 
     this._events = this._model.getFilteredPoints().slice().sort((a, b) => a.startTime - b.startTime);
-    this._container.innerHTML = ``;
+    this._containerElement.innerHTML = ``;
 
     if (this._model.getAllPoints().length === 0) {
-      render(this._container, this._noPoints);
+      render(this._containerElement, this._noPoints);
       this._activeTripMode = TripMode.ADDING_FIRST_POINT;
       if (this._tripComponent) {
         remove(this._tripComponent);
@@ -89,7 +92,7 @@ export default class TripController {
       }
     } else {
       this._activeTripMode = TripMode.DEFAULT;
-      render(this._container, this._sortComponent.getElement());
+      render(this._containerElement, this._sortComponent.getElement());
 
 
       if (!this._tripComponent) {
@@ -113,34 +116,21 @@ export default class TripController {
   }
 
   createNewPoint() {
-    const newPointButton = document.querySelector(`.trip-main__event-add-btn`);
-
-    newPointButton.setAttribute(`disabled`, `true`);
     if (this._addingPointController) {
       return;
     }
     this._onViewChange();
 
     if (this._activeTripMode === TripMode.ADDING_FIRST_POINT) {
-      this._container.innerHTML = ``;
-      this._addingPointController = new PointController(this._container, this._onDataChange, this._onViewChange, this._api, TripMode.ADDING_FIRST_POINT);
+      this._containerElement.innerHTML = ``;
+      this._addingPointController = new PointController(this._containerElement, this._onDataChange, this._onViewChange, this._api, TripMode.ADDING_FIRST_POINT);
       this._addingPointController.render(EmptyPointModel, Mode.ADDING);
     } else {
       this._addingPointController = new PointController(this._sortComponent.getElement(), this._onDataChange, this._onViewChange, this._api);
       this._addingPointController.render(EmptyPointModel, Mode.ADDING);
     }
 
-    const onEscKeyDown = (evt) => {
-      const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
-      if (isEscKey) {
-        this._addingPointController = null;
-        this._updatePoints();
-        newPointButton.removeAttribute(`disabled`);
-        document.removeEventListener(`keydown`, onEscKeyDown);
-      }
-    };
-
-    document.addEventListener(`keydown`, onEscKeyDown);
+    document.addEventListener(`keydown`, this._onEscKeyDown);
   }
 
 
@@ -149,6 +139,19 @@ export default class TripController {
     this._controllers = [];
   }
 
+  setEnableNewPointButtonHandler(handler) {
+    this._enableButtonHandlers.push(handler);
+  }
+
+  _onEscKeyDown(evt) {
+    const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
+    if (isEscKey) {
+      this._enableButtonHandlers.forEach((handler) => handler(false));
+      this._addingPointController = null;
+      this._updatePoints();
+      document.removeEventListener(`keydown`, this._onEscKeyDown);
+    }
+  }
 
   _renderWithDays() {
     this.removePoints();
@@ -179,7 +182,7 @@ export default class TripController {
     if (oldDaysComponent) {
       replace(this._daysComponent, oldDaysComponent);
     } else {
-      render(this._container, this._daysComponent.getElement());
+      render(this._containerElement, this._daysComponent.getElement());
     }
     this._controllers = [];
     days.forEach((day) => {
@@ -207,7 +210,7 @@ export default class TripController {
     if (oldNoDaysComponent) {
       replace(this._noDaysComponent, oldNoDaysComponent);
     } else {
-      render(this._container, this._noDaysComponent.getElement());
+      render(this._containerElement, this._noDaysComponent.getElement());
     }
 
     const sortedPoints = getSortedPoints(points, this._activeSortType);
@@ -281,7 +284,7 @@ export default class TripController {
           pointController.shake();
         });
     }
-
+    this._enableButtonHandlers.forEach((handler) => handler(false));
     calculatePrice(this._model.getAllPoints());
   }
 
@@ -292,8 +295,7 @@ export default class TripController {
       this._addingPointController.destroyPoint();
       this._addingPointController = null;
 
-      const newPointButton = document.querySelector(`.trip-main__event-add-btn`);
-      newPointButton.removeAttribute(`disabled`);
+      this._enableButtonHandlers.forEach((handler) => handler(false));
     }
   }
 }

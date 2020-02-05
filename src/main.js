@@ -10,6 +10,8 @@ import LoadingComponent from "./components/loading";
 import Store from './api/store.js';
 import Provider from './api/provider.js';
 import 'flatpickr/dist/flatpickr.css';
+import EventsComponent from "./components/events";
+import NewPointButtonComponent from "./components/new-point-button";
 
 
 const STORE_PREFIX = `big-trip-localstorage`;
@@ -19,7 +21,10 @@ const STORE_NAME = `${STORE_PREFIX}-${STORE_VER}`;
 const END_POINT = `https://htmlacademy-es-10.appspot.com/big-trip`;
 const AUTHORIZATION = `Basic er883jdzbdw345353456`;
 
-const tripEventsElement = document.querySelector(`.trip-events`);
+
+const bodyElement = document.querySelector(`main .page-body__container`);
+const tripInfoElement = document.querySelector(`.trip-main`);
+
 
 window.addEventListener(`load`, () => {
   navigator.serviceWorker.register(`/sw.js`)
@@ -47,10 +52,15 @@ window.addEventListener(`offline`, () => {
   document.title += ` [offline]`;
 });
 
+const newPointButtonComponent = new NewPointButtonComponent();
+render(tripInfoElement, newPointButtonComponent.getElement());
+
+const eventsComponent = new EventsComponent();
+render(bodyElement, eventsComponent.getElement());
 
 const loadingComponent = new LoadingComponent();
 
-render(tripEventsElement, loadingComponent.getElement());
+render(eventsComponent.getElement(), loadingComponent.getElement());
 
 const api = new API(END_POINT, AUTHORIZATION);
 
@@ -76,13 +86,10 @@ Promise.all([
     const tripControlsElement = document.querySelector(`.trip-main__trip-controls`);
     const tripControlsMenuElement = tripControlsElement.querySelector(`h2`);
 
-    const mainElement = document.querySelector(`.page-body__page-main`);
-    const bodyElement = mainElement.querySelector(`.page-body__container`);
-
     const menuComponent = new MenuComponent();
     render(tripControlsMenuElement, menuComponent.getElement(), RenderPosition.AFTEREND);
 
-    const tripController = new TripController(tripEventsElement, pointsModel, apiWithProvider);
+    const tripController = new TripController(eventsComponent, pointsModel, apiWithProvider);
 
     tripController.render();
 
@@ -94,17 +101,24 @@ Promise.all([
 
     statisticsComponent.render();
     statisticsComponent.hide();
-    document.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, tripController.createNewPoint);
+
+    newPointButtonComponent.setNewPointButtonClickHandler(() => {
+      tripController.setEnableNewPointButtonHandler(newPointButtonComponent.setDisabled);
+      tripController.createNewPoint();
+      newPointButtonComponent.setDisabled(true);
+
+    });
+
     menuComponent.setMenuItemClickHandler((currentMenuItem) => {
       switch (currentMenuItem) {
         case MenuItem.TABLE:
           statisticsComponent.hide();
           tripController.show();
-          document.querySelector(`.trip-main__event-add-btn`).removeAttribute(`disabled`);
+          newPointButtonComponent.setDisabled(false);
           break;
 
         case MenuItem.STATS:
-          document.querySelector(`.trip-main__event-add-btn`).setAttribute(`disabled`, `true`);
+          newPointButtonComponent.setDisabled(true);
           statisticsComponent.show();
           tripController.hide();
           break;

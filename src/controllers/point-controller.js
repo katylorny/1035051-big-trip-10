@@ -101,7 +101,6 @@ export default class PointController {
       const newData = parseFormData(this._eventEditComponent.getData());
       this._blockForm(true);
       this._onDataChange(this, event, newData);
-      document.querySelector(`.trip-main__event-add-btn`).removeAttribute(`disabled`);
     });
 
     this._eventEditComponent.setFavoriteButtonClickHandler(() => {
@@ -115,7 +114,6 @@ export default class PointController {
       this._blockForm(true);
       this._setDeleteButtonText(ButtonsLoadText.deleteButtonText);
       this._onDataChange(this, event, null);
-      document.querySelector(`.trip-main__event-add-btn`).removeAttribute(`disabled`);
     });
 
     switch (this._mode) {
