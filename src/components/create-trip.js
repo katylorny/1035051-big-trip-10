@@ -28,11 +28,16 @@ const createTripTemplate = (model) => {
   }
 
   return (
-    `<div class="trip-info__main">
+    `<section class="trip-main__trip-info  trip-info">
+            <div class="trip-info__main">
               <h1 class="trip-info__title">${cityStart} &mdash; ${midElement} ${cityEnd}</h1>
 
               <p class="trip-info__dates">${moment(startTime).format(`MMM DD`)}&nbsp;&mdash;&nbsp;${moment(endTime).format(`MMM DD`)}</p>
-            </div>`
+            </div>
+            <p class="trip-info__cost">
+              Total: &euro;&nbsp;<span class="trip-info__cost-value">0</span>
+            </p>
+     </section>`
   );
 };
 

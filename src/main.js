@@ -83,7 +83,7 @@ Promise.all([
   .then((results) => {
     pointsModel.setPoints(results[0]);
 
-    const tripControlsElement = document.querySelector(`.trip-main__trip-controls`);
+    // const tripControlsElement = document.querySelector(`.trip-main__trip-controls`);
     const tripControlsMenuElement = tripControlsElement.querySelector(`h2`);
 
     const menuComponent = new MenuComponent();

@@ -46,7 +46,7 @@ export default class TripController {
 
     this._activeTripMode = TripMode.DEFAULT;
     this._noPoints = new NoPointsComponent().getElement();
-    this._tripInfoElement = document.querySelector(`.trip-main__trip-info`);
+    this._tripInfoElement = document.querySelector(`.trip-main`);
     this._tripComponent = null;
     this._sortComponent = new SortComponent();
     this._onSortTypeChange = this._onSortTypeChange.bind(this);
@@ -285,7 +285,7 @@ export default class TripController {
         });
     }
     this._enableButtonHandlers.forEach((handler) => handler(false));
-    calculatePrice(this._model.getAllPoints());
+    // calculatePrice(this._model.getAllPoints());
   }
 
   _onViewChange() {
